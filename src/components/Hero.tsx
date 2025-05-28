@@ -154,16 +154,16 @@ export default function Hero() {
               <div className="relative transform hover:scale-105 transition-transform duration-300 flex-shrink-0">
                 {/* Phone Shadow */}
                 <div className="absolute inset-0 bg-black/20 rounded-[2.5rem] md:rounded-[3rem] transform translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 blur-lg"></div>{" "}
-                {/* Phone Body */}{" "}
+                {/* Phone Body */}
                 <div
-                  className="relative w-64 h-[580px] md:w-72 md:h-[680px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer transition-all duration-300"
+                  className="relative w-72 h-[640px] md:w-80 md:h-[720px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer transition-all duration-300"
                   onClick={() => setIsInteractive(!isInteractive)}
                   onTouchStart={() => setIsInteractive(!isInteractive)}
                 >
                   {/* Screen */}
                   <div className="w-full h-full bg-black rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden">
-                    {/* Notch */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-5 md:w-32 md:h-6 bg-black rounded-b-2xl z-10"></div>{" "}
+                    {/* Punch-hole Camera */}
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-4 h-4 md:w-5 md:h-5 bg-black rounded-full z-10 border-2 border-gray-700"></div>
                     {/* Scrollable Screen Content */}
                     <div
                       ref={scrollRef}
@@ -247,7 +247,7 @@ export default function Hero() {
                             ></div>
                           </div>
                         </div>
-                      </div>
+                      </div>{" "}
                       {/* Map View */}
                       <div className="relative h-80 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden">
                         {/* Map Background Pattern */}
@@ -479,24 +479,23 @@ export default function Hero() {
                             </svg>
                           </button>{" "}
                         </div>
-                      </div>{" "}
-                      {/* Alert Section */}
-                      <div className="px-4 py-2 space-y-2">
+
+                        {/* Alert Overlay - Positioned over the map */}
                         <div
-                          className={`transform transition-all duration-500 ${
+                          className={`absolute top-4 left-4 right-4 transform transition-all duration-500 z-20 ${
                             showAlert
                               ? "translate-y-0 opacity-100 scale-100"
-                              : "translate-y-4 opacity-0 scale-95"
+                              : "translate-y-4 opacity-0 scale-95 pointer-events-none"
                           }`}
                         >
                           <div
-                            className={`p-3 rounded-lg border-l-4 shadow-lg ${
+                            className={`p-3 rounded-lg border-l-4 shadow-xl backdrop-blur-sm ${
                               potholes[currentPothole]?.severity === "High"
-                                ? "bg-gradient-to-r from-red-50 to-red-100 border-red-500"
+                                ? "bg-gradient-to-r from-red-50/95 to-red-100/95 border-red-500"
                                 : potholes[currentPothole]?.severity ===
                                   "Medium"
-                                ? "bg-gradient-to-r from-yellow-50 to-orange-100 border-yellow-500"
-                                : "bg-gradient-to-r from-green-50 to-emerald-100 border-green-500"
+                                ? "bg-gradient-to-r from-yellow-50/95 to-orange-100/95 border-yellow-500"
+                                : "bg-gradient-to-r from-green-50/95 to-emerald-100/95 border-green-500"
                             }`}
                           >
                             <div className="flex items-center justify-between">
@@ -543,7 +542,9 @@ export default function Hero() {
                             </div>
                           </div>
                         </div>
-                        {/* Enhanced Route Options */}
+                      </div>{" "}
+                      {/* Enhanced Route Options */}
+                      <div className="px-4 py-2 space-y-2">
                         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 shadow-sm">
                           <div className="flex items-center justify-between mb-2">
                             <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
@@ -788,7 +789,7 @@ export default function Hero() {
                     {isInteractive ? "Interactive" : "Tap to Interact"}
                   </span>
                 </div>
-              </div>
+              </div>{" "}
               {/* Enhanced Vertical Road Animation */}
               <div className="hidden lg:block relative">
                 <svg
@@ -797,187 +798,200 @@ export default function Hero() {
                   viewBox="0 0 180 500"
                   className="drop-shadow-2xl"
                 >
-                  {/* Road Surface - Vertical */}
-                  <rect x="60" y="0" width="60" height="500" fill="#374151" />
-                  {/* Road Markings - Vertical */}
+                  {/* Road Surface - Vertical - Matching mockup exactly */}
+                  <rect x="75" y="0" width="30" height="500" fill="#374151" />
+                  {/* Road Markings - Vertical - Matching mockup exactly */}
                   <line
                     x1="90"
                     y1="0"
                     x2="90"
                     y2="500"
                     stroke="white"
-                    strokeWidth="3"
-                    strokeDasharray="25,25"
-                    opacity="0.8"
-                  />{" "}
-                  {/* Road Edges */}
-                  <line
-                    x1="60"
-                    y1="0"
-                    x2="60"
-                    y2="500"
-                    stroke="#1F2937"
                     strokeWidth="2"
+                    strokeDasharray="15,15"
+                    fill="none"
                   />
-                  <line
-                    x1="120"
-                    y1="0"
-                    x2="120"
-                    y2="500"
-                    stroke="#1F2937"
-                    strokeWidth="2"
-                  />{" "}
-                  {/* Side Roads - Exactly matching mobile mockup proportions */}
+                  {/* Side Roads - Exactly matching mobile mockup */}
                   <rect
-                    x="5"
-                    y="120"
-                    width="70"
+                    x="20"
+                    y="150"
+                    width="55"
                     height="15"
                     fill="#6B7280"
                     opacity="0.7"
                   />
                   <rect
-                    x="120"
-                    y="300"
+                    x="105"
+                    y="375"
                     width="70"
                     height="15"
                     fill="#6B7280"
                     opacity="0.7"
                   />
-                  {/* Potholes on vertical road */}
+                  {/* Potholes positioned exactly like mockup */}
                   <g>
                     <circle
-                      cx="75"
-                      cy="120"
+                      cx="90"
+                      cy="350"
                       r="8"
-                      fill="#EF4444"
-                      opacity="0.9"
-                      className="animate-pulse"
+                      fill="white"
+                      stroke="#F59E0B"
+                      strokeWidth="2"
+                      className="drop-shadow-sm"
                     />
                     <text
-                      x="75"
-                      y="123"
+                      x="90"
+                      y="352"
                       textAnchor="middle"
                       className="text-xs font-bold"
-                      fill="white"
-                    >
-                      ⚠
-                    </text>
-                  </g>
-                  <g>
-                    <circle
-                      cx="105"
-                      cy="280"
-                      r="10"
                       fill="#F59E0B"
-                      opacity="0.9"
-                      className="animate-pulse"
-                    />
-                    <text
-                      x="105"
-                      y="284"
-                      textAnchor="middle"
-                      className="text-xs font-bold"
-                      fill="white"
                     >
                       ⚠
                     </text>
+                    <circle
+                      cx="90"
+                      cy="350"
+                      r="12"
+                      stroke="#F59E0B"
+                      strokeWidth="1"
+                      fill="none"
+                      opacity="0.4"
+                      className="animate-pulse"
+                    />
                   </g>
                   <g>
                     <circle
-                      cx="80"
-                      cy="420"
-                      r="6"
-                      fill="#10B981"
-                      opacity="0.9"
-                      className="animate-pulse"
+                      cx="90"
+                      cy="225"
+                      r="8"
+                      fill="white"
+                      stroke="#EF4444"
+                      strokeWidth="2"
+                      className="drop-shadow-sm"
                     />
                     <text
-                      x="80"
-                      y="423"
+                      x="90"
+                      y="227"
                       textAnchor="middle"
                       className="text-xs font-bold"
-                      fill="white"
+                      fill="#EF4444"
                     >
                       ⚠
                     </text>
+                    <circle
+                      cx="90"
+                      cy="225"
+                      r="12"
+                      stroke="#EF4444"
+                      strokeWidth="1"
+                      fill="none"
+                      opacity="0.4"
+                      className="animate-pulse"
+                    />
                   </g>
-                  {/* Moving Vehicle - Bottom to Top */}
+                  <g>
+                    <circle
+                      cx="90"
+                      cy="100"
+                      r="8"
+                      fill="white"
+                      stroke="#10B981"
+                      strokeWidth="2"
+                      className="drop-shadow-sm"
+                    />
+                    <text
+                      x="90"
+                      y="102"
+                      textAnchor="middle"
+                      className="text-xs font-bold"
+                      fill="#10B981"
+                    >
+                      ⚠
+                    </text>
+                    <circle
+                      cx="90"
+                      cy="100"
+                      r="12"
+                      stroke="#10B981"
+                      strokeWidth="1"
+                      fill="none"
+                      opacity="0.4"
+                      className="animate-pulse"
+                    />
+                  </g>{" "}
+                  {/* Moving Vehicle - Bottom to Top - Matching mockup exactly */}
                   <g
-                    transform={`translate(90, ${450 - vehiclePosition * 4})`}
+                    transform={`translate(90, ${470 - vehiclePosition * 4.2})`}
                     className="drop-shadow-lg"
                   >
                     {/* Vehicle Shadow */}
                     <ellipse
                       cx="1"
                       cy="1"
-                      rx="10"
-                      ry="15"
+                      rx="8"
+                      ry="12"
                       fill="black"
-                      opacity="0.3"
+                      opacity="0.2"
                     />
                     {/* Vehicle Body */}
-                    <rect
-                      x="-8"
-                      y="-12"
-                      width="16"
-                      height="24"
-                      fill="#229799"
-                      rx="4"
-                    />
-                    {/* Vehicle Windows */}
                     <rect
                       x="-6"
                       y="-10"
                       width="12"
-                      height="8"
+                      height="20"
+                      fill="#229799"
+                      rx="3"
+                    />
+                    {/* Vehicle Windows */}
+                    <rect
+                      x="-4"
+                      y="-8"
+                      width="8"
+                      height="6"
                       fill="#DBEAFE"
-                      rx="2"
+                      rx="1"
                     />
                     <rect
-                      x="-6"
+                      x="-4"
                       y="2"
-                      width="12"
-                      height="8"
+                      width="8"
+                      height="6"
                       fill="#DBEAFE"
-                      rx="2"
+                      rx="1"
                     />
-                    {/* Vehicle Direction Arrow */}
-                    <polygon points="0,-15 6,-10 -6,-10" fill="#10B981" />
-                    {/* Headlights */}
-                    <circle cx="-4" cy="-14" r="1.5" fill="#FBBF24" />
-                    <circle cx="4" cy="-14" r="1.5" fill="#FBBF24" />
+                    {/* Vehicle Direction Indicator */}
+                    <polygon points="0,-12 4,-8 -4,-8" fill="#10B981" />
+                    {/* GPS Pulse */}
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="20"
+                      stroke="#229799"
+                      strokeWidth="2"
+                      fill="none"
+                      opacity="0.3"
+                      className="animate-ping"
+                    />
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="35"
+                      stroke="#229799"
+                      strokeWidth="1"
+                      fill="none"
+                      opacity="0.2"
+                      className="animate-ping"
+                      style={{ animationDelay: "0.5s" }}
+                    />
                   </g>
-                  {/* Detection Waves around moving vehicle */}
-                  <circle
-                    cx="90"
-                    cy={450 - vehiclePosition * 4}
-                    r="35"
-                    stroke="#229799"
-                    strokeWidth="2"
-                    fill="none"
-                    opacity="0.4"
-                    className="animate-ping"
-                  />
-                  <circle
-                    cx="90"
-                    cy={450 - vehiclePosition * 4}
-                    r="55"
-                    stroke="#229799"
-                    strokeWidth="1"
-                    fill="none"
-                    opacity="0.2"
-                    className="animate-ping"
-                    style={{ animationDelay: "0.5s" }}
-                  />
-                  {/* Destination marker */}
-                  <g transform="translate(90, 30)">
-                    <circle cx="0" cy="0" r="18" fill="#10B981" opacity="0.9" />
+                  {/* Destination marker - Matching mockup */}
+                  <g transform="translate(90, 25)">
+                    <circle cx="0" cy="0" r="15" fill="#10B981" opacity="0.9" />
                     <text
                       x="0"
-                      y="2"
+                      y="1"
                       textAnchor="middle"
-                      className="text-sm font-bold"
+                      className="text-xs font-bold"
                       fill="white"
                     >
                       🏢
@@ -985,7 +999,7 @@ export default function Hero() {
                     <circle
                       cx="0"
                       cy="0"
-                      r="25"
+                      r="20"
                       stroke="#10B981"
                       strokeWidth="2"
                       fill="none"
@@ -993,18 +1007,18 @@ export default function Hero() {
                       className="animate-ping"
                     />
                   </g>
-                  {/* Starting point */}
-                  <g transform="translate(90, 470)">
-                    <circle cx="0" cy="0" r="15" fill="#229799" opacity="0.9" />
+                  {/* Starting point - Matching mockup */}{" "}
+                  <g transform="translate(90, 450)">
+                    <circle cx="0" cy="0" r="12" fill="#229799" opacity="0.9" />
                     <text
                       x="0"
-                      y="2"
+                      y="1"
                       textAnchor="middle"
-                      className="text-sm font-bold"
+                      className="text-xs font-bold"
                       fill="white"
                     >
                       🏠
-                    </text>{" "}
+                    </text>
                   </g>
                 </svg>
               </div>
