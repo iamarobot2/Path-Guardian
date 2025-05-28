@@ -29,30 +29,35 @@ export default function Stats() {
       color: "text-green-600",
     },
   ];
-
   return (
-    <section className="py-16 px-4 bg-white">
-      <div className="container mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
+    <section className="py-12 md:py-20 lg:py-24 px-4 md:px-6 lg:px-8 bg-gradient-to-br from-white via-gray-50 to-teal-50">
+      <div className="container mx-auto max-w-7xl">
+        <div className="text-center mb-12 md:mb-16 lg:mb-20">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-4 md:mb-6">
             The Road Safety Crisis
-          </h2>{" "}
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          </h2>
+          <p className="text-gray-600 text-base md:text-lg lg:text-xl max-w-3xl mx-auto leading-relaxed">
             Path Guardian addresses a severe and costly challenge impacting
             India&apos;s infrastructure and public safety.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 lg:gap-10">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow transform hover:scale-105"
+              className="group bg-white/90 backdrop-blur-sm p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg border border-gray-200/50 hover:shadow-2xl hover:border-gray-300/50 transition-all duration-300  hover:scale-105"
             >
-              <div className={`${stat.color} text-4xl font-bold mb-2`}>
+              <div
+                className={`${stat.color} text-3xl md:text-4xl lg:text-5xl font-bold mb-3 md:mb-4 group-hover:scale-105 transition-transform duration-300`}
+              >
                 {stat.number}
               </div>
-              <div className="text-gray-800 font-medium mb-2">{stat.label}</div>
-              <p className="text-gray-600 text-sm">{stat.description}</p>
+              <div className="text-gray-800 font-semibold text-lg md:text-xl mb-3 md:mb-4">
+                {stat.label}
+              </div>
+              <p className="text-gray-600 text-sm md:text-base leading-relaxed">
+                {stat.description}
+              </p>
             </div>
           ))}
         </div>
