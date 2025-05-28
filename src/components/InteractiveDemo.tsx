@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 interface Vehicle {
   id: string;
@@ -18,7 +18,6 @@ interface RouteHazard {
   y: number;
   type: "pothole" | "crack" | "construction" | "flooding";
   severity: "low" | "medium" | "high" | "critical";
-  cost: number;
   routeId: string;
 }
 
@@ -27,7 +26,6 @@ interface Route {
   name: string;
   distance: number;
   estimatedTime: number;
-  totalCost: number;
   hazardCount: number;
   trafficLevel: "low" | "medium" | "high";
   description: string;
@@ -47,7 +45,6 @@ export default function InteractiveDemo() {
   );
   const [activeHazards, setActiveHazards] = useState<Set<string>>(new Set());
   const [isVerticalLayout, setIsVerticalLayout] = useState(false);
-  const animationRef = useRef<number>(0);
 
   // Responsive layout detection
   useEffect(() => {
@@ -79,8 +76,7 @@ export default function InteractiveDemo() {
       3 * (1 - t) * Math.pow(t, 2) * p2.y +
       Math.pow(t, 3) * p3.y;
     return { x, y };
-  };
-  // Helper function to calculate vehicle angle based on direction
+  }; // Helper function to calculate vehicle angle based on direction - Fixed for proper orientation
   const calculateVehicleAngle = useCallback(
     (
       t: number,
@@ -89,39 +85,26 @@ export default function InteractiveDemo() {
       p2: { x: number; y: number },
       p3: { x: number; y: number }
     ) => {
-      const delta = 0.005; // Smaller delta for smoother angle calculation
+      const delta = 0.005; // Very small delta for precise angle calculation
       const nextT = Math.min(t + delta, 1);
       const currentPos = getPointOnCubicBezier(t, p0, p1, p2, p3);
       const nextPos = getPointOnCubicBezier(nextT, p0, p1, p2, p3);
 
-      let angle =
-        Math.atan2(nextPos.y - currentPos.y, nextPos.x - currentPos.x) *
-        (180 / Math.PI);
+      // Calculate the direction vector
+      const dx = nextPos.x - currentPos.x;
+      const dy = nextPos.y - currentPos.y; // Calculate angle in radians first, then convert to degrees
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
-      // Fix orientation for large screens - ensure proper forward direction
+      // For horizontal layout (large screens), the car needs special handling
       if (!isVerticalLayout) {
-        // For horizontal layout, ensure car always points forward (right direction)
-        // Normalize angle to prevent perpendicular orientation
-        if (angle > 90) {
-          angle = angle - 180;
-        } else if (angle < -90) {
-          angle = angle + 180;
-        }
-        // Clamp extreme angles to prevent perpendicular orientation
-        angle = Math.max(-45, Math.min(45, angle));
+        // For horizontal routes, ensure the car faces forward along the curve
+        // The car icon default points right (0 degrees), so we use the calculated angle directly
+        return angle;
       } else {
-        // For vertical layout, ensure car points downward
-        if (angle < 0) {
-          angle = angle + 360;
-        }
-        if (angle > 180) {
-          angle = angle - 360;
-        }
-        // Ensure generally downward direction
-        angle = angle + 90;
+        // For vertical layout, the car should point downward along the curve
+        // Add 90 degrees to account for the car's default orientation
+        return angle + 90;
       }
-
-      return angle;
     },
     [isVerticalLayout]
   );
@@ -177,7 +160,6 @@ export default function InteractiveDemo() {
         name: "Shortest Route",
         distance: 8.2,
         estimatedTime: 25,
-        totalCost: 85,
         hazardCount: 8,
         trafficLevel: "medium",
         description: "Shortest distance but poor road quality",
@@ -191,7 +173,6 @@ export default function InteractiveDemo() {
         name: "Balanced Route",
         distance: 9.8,
         estimatedTime: 18,
-        totalCost: 42,
         hazardCount: 3,
         trafficLevel: "low",
         description: "Optimal balance of distance and road quality",
@@ -205,7 +186,6 @@ export default function InteractiveDemo() {
         name: "Longest Route",
         distance: 12.5,
         estimatedTime: 22,
-        totalCost: 35,
         hazardCount: 1,
         trafficLevel: "high",
         description: "Longest but highest quality roads",
@@ -215,7 +195,6 @@ export default function InteractiveDemo() {
           : `M ${startPoint.x} ${startPoint.y} C 200 200, 450 220, ${endPoint.x} ${endPoint.y}`,
       },
     ];
-
     const hazardData: RouteHazard[] = [
       // Route 1 hazards (many)
       {
@@ -223,7 +202,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.15, "route1"),
         type: "pothole",
         severity: "high",
-        cost: 15,
         routeId: "route1",
       },
       {
@@ -231,7 +209,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.25, "route1"),
         type: "crack",
         severity: "medium",
-        cost: 8,
         routeId: "route1",
       },
       {
@@ -239,7 +216,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.35, "route1"),
         type: "pothole",
         severity: "critical",
-        cost: 25,
         routeId: "route1",
       },
       {
@@ -247,7 +223,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.45, "route1"),
         type: "construction",
         severity: "high",
-        cost: 20,
         routeId: "route1",
       },
       {
@@ -255,7 +230,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.55, "route1"),
         type: "flooding",
         severity: "medium",
-        cost: 12,
         routeId: "route1",
       },
       {
@@ -263,7 +237,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.65, "route1"),
         type: "pothole",
         severity: "high",
-        cost: 18,
         routeId: "route1",
       },
       {
@@ -271,7 +244,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.75, "route1"),
         type: "crack",
         severity: "low",
-        cost: 5,
         routeId: "route1",
       },
       {
@@ -279,7 +251,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.85, "route1"),
         type: "pothole",
         severity: "medium",
-        cost: 10,
         routeId: "route1",
       },
 
@@ -289,7 +260,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.3, "route2"),
         type: "crack",
         severity: "low",
-        cost: 4,
         routeId: "route2",
       },
       {
@@ -297,7 +267,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.5, "route2"),
         type: "pothole",
         severity: "medium",
-        cost: 8,
         routeId: "route2",
       },
       {
@@ -305,7 +274,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.7, "route2"),
         type: "crack",
         severity: "low",
-        cost: 3,
         routeId: "route2",
       },
 
@@ -315,7 +283,6 @@ export default function InteractiveDemo() {
         ...getRoutePosition(0.4, "route3"),
         type: "crack",
         severity: "low",
-        cost: 2,
         routeId: "route3",
       },
     ];
@@ -335,105 +302,112 @@ export default function InteractiveDemo() {
     setRoutes(routeData);
     setHazards(hazardData);
     setVehicles(initialVehicle);
-  }, [isVerticalLayout, selectedRoute, getRoutePosition]);
-  // Vehicle animation along selected route - Optimized for performance
+  }, [isVerticalLayout, selectedRoute, getRoutePosition]); // High-performance vehicle animation using requestAnimationFrame
   useEffect(() => {
-    let frameCount = 0;
-    const animate = () => {
-      frameCount++;
-      // Only update every 2nd frame for better performance
-      if (frameCount % 2 !== 0) {
-        animationRef.current = requestAnimationFrame(animate);
-        return;
-      }
+    if (routes.length === 0 || vehicles.length === 0) return;
 
+    const animateVehicle = () => {
+      let currentProgress = 0;
+      let animationId: number;
       const activeHazardIds = new Set<string>();
+      let lastTime = performance.now();
 
-      setVehicles((prev) =>
-        prev.map((vehicle) => {
-          const route = routes.find((r) => r.id === vehicle.currentRoute);
-          if (!route) return vehicle;
+      const updateLoop = (currentTime: number) => {
+        const deltaTime = currentTime - lastTime;
+        lastTime = currentTime; // Much faster speed - frame rate independent
+        const speedPerSecond = 15; // 15% per second (slowed down)
+        currentProgress += (speedPerSecond * deltaTime) / 1000;
 
-          let newProgress = vehicle.progress + 0.08; // Slightly reduced speed for smoother movement
-          if (newProgress > 100) newProgress = 0;
+        if (currentProgress > 100) currentProgress = 0;
 
-          const t = newProgress / 100;
-          const position = getRoutePosition(t, vehicle.currentRoute);
-          const newX = position.x;
-          const newY = position.y;
+        const t = currentProgress / 100;
+        const position = getRoutePosition(t, selectedRoute);
 
-          // Calculate vehicle angle using same control points as position
-          let newAngle = 0;
-          if (isVerticalLayout) {
-            const start = { x: 50, y: 30 };
-            const end = { x: 65, y: 470 };
-            if (vehicle.currentRoute === "route1") {
-              const cp1 = { x: 25, y: 120 };
-              const cp2 = { x: 20, y: 350 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            } else if (vehicle.currentRoute === "route2") {
-              const cp1 = { x: 52, y: 150 };
-              const cp2 = { x: 58, y: 350 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            } else {
-              const cp1 = { x: 75, y: 180 };
-              const cp2 = { x: 80, y: 320 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            }
+        // Calculate angle using route-specific control points
+        let angle = 0;
+        if (isVerticalLayout) {
+          const start = { x: 50, y: 30 };
+          const end = { x: 65, y: 470 };
+          if (selectedRoute === "route1") {
+            const cp1 = { x: 25, y: 120 };
+            const cp2 = { x: 20, y: 350 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
+          } else if (selectedRoute === "route2") {
+            const cp1 = { x: 52, y: 150 };
+            const cp2 = { x: 58, y: 350 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
           } else {
-            const start = { x: 50, y: 150 };
-            const end = { x: 650, y: 150 };
-            if (vehicle.currentRoute === "route1") {
-              const cp1 = { x: 200, y: 100 };
-              const cp2 = { x: 450, y: 80 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            } else if (vehicle.currentRoute === "route2") {
-              const cp1 = { x: 250, y: 140 };
-              const cp2 = { x: 450, y: 145 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            } else {
-              const cp1 = { x: 200, y: 200 };
-              const cp2 = { x: 450, y: 220 };
-              newAngle = calculateVehicleAngle(t, start, cp1, cp2, end);
-            }
+            const cp1 = { x: 75, y: 180 };
+            const cp2 = { x: 80, y: 320 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
           }
+        } else {
+          const start = { x: 50, y: 150 };
+          const end = { x: 650, y: 150 };
+          if (selectedRoute === "route1") {
+            const cp1 = { x: 200, y: 100 };
+            const cp2 = { x: 450, y: 80 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
+          } else if (selectedRoute === "route2") {
+            const cp1 = { x: 250, y: 140 };
+            const cp2 = { x: 450, y: 145 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
+          } else {
+            const cp1 = { x: 200, y: 200 };
+            const cp2 = { x: 450, y: 220 };
+            angle = calculateVehicleAngle(t, start, cp1, cp2, end);
+          }
+        }
 
-          // Check for hazard alerts with reduced detection distance for better performance
-          let hasAlert = false;
-          const routeHazards = hazards.filter(
-            (h) => h.routeId === vehicle.currentRoute
+        // Check for hazard alerts with increased detection radius
+        let hasAlert = false;
+        activeHazardIds.clear(); // Clear previous hazards
+        const routeHazards = hazards.filter((h) => h.routeId === selectedRoute);
+        routeHazards.forEach((hazard) => {
+          const distance = Math.sqrt(
+            Math.pow(hazard.x - position.x, 2) +
+              Math.pow(hazard.y - position.y, 2)
           );
-          routeHazards.forEach((hazard) => {
-            const distance = Math.sqrt(
-              Math.pow(hazard.x - newX, 2) + Math.pow(hazard.y - newY, 2)
-            );
-            if (distance < 15) {
-              // Reduced detection distance
-              hasAlert = true;
-              activeHazardIds.add(hazard.id);
-            }
-          });
+          if (distance < 30) {
+            // Increased detection radius
+            hasAlert = true;
+            activeHazardIds.add(hazard.id);
+          }
+        });
 
-          return {
+        // Update vehicle state in batches to reduce re-renders
+        setVehicles((prev) =>
+          prev.map((vehicle) => ({
             ...vehicle,
-            x: newX,
-            y: newY,
-            angle: newAngle,
-            progress: newProgress,
+            x: position.x,
+            y: position.y,
+            angle,
+            progress: currentProgress,
             currentRoute: selectedRoute,
             hasAlert,
-          };
-        })
-      );
+          }))
+        );
 
-      setActiveHazards(activeHazardIds);
-      animationRef.current = requestAnimationFrame(animate);
+        setActiveHazards(new Set(activeHazardIds));
+
+        // Continue animation loop
+        animationId = requestAnimationFrame(updateLoop);
+      };
+
+      // Start the animation loop
+      animationId = requestAnimationFrame(updateLoop);
+
+      return () => {
+        if (animationId) {
+          cancelAnimationFrame(animationId);
+        }
+      };
     };
+    const cleanup = animateVehicle();
 
-    if (routes.length > 0) {
-      animationRef.current = requestAnimationFrame(animate);
-    }
-    return () => cancelAnimationFrame(animationRef.current);
+    return () => {
+      cleanup();
+    };
   }, [
     routes,
     hazards,
@@ -441,6 +415,7 @@ export default function InteractiveDemo() {
     isVerticalLayout,
     calculateVehicleAngle,
     getRoutePosition,
+    vehicles.length,
   ]);
 
   const getSeverityColor = (severity: RouteHazard["severity"]) => {
@@ -470,10 +445,35 @@ export default function InteractiveDemo() {
         return "#6B7280";
     }
   };
-
   const getRouteRecommendation = () => {
-    const sortedRoutes = [...routes].sort((a, b) => a.totalCost - b.totalCost);
+    // Recommend based on lowest hazard count and good time
+    const sortedRoutes = [...routes].sort((a, b) => {
+      const aScore = a.hazardCount + a.estimatedTime / 10;
+      const bScore = b.hazardCount + b.estimatedTime / 10;
+      return aScore - bScore;
+    });
     return sortedRoutes[0]?.id || "route2";
+  };
+  const getVehicleRingColor = () => {
+    if (activeHazards.size === 0) {
+      return "#229799"; // Default teal color
+    }
+
+    // Find the highest severity among active hazards
+    let highestSeverity: RouteHazard["severity"] = "low";
+    hazards.forEach((hazard) => {
+      if (activeHazards.has(hazard.id)) {
+        if (
+          hazard.severity === "critical" ||
+          (hazard.severity === "high" && highestSeverity !== "critical") ||
+          (hazard.severity === "medium" && highestSeverity === "low")
+        ) {
+          highestSeverity = hazard.severity;
+        }
+      }
+    });
+
+    return getSeverityColor(highestSeverity);
   };
 
   return (
@@ -726,34 +726,8 @@ export default function InteractiveDemo() {
                             ? "⚡"
                             : hazard.type === "construction"
                             ? "🚧"
-                            : "💧"}
-                        </text>{" "}
-                        {/* Active hazard pulse ring - Fixed positioning */}
-                        {activeHazards.has(hazard.id) && (
-                          <>
-                            <circle
-                              cx={hazard.x}
-                              cy={hazard.y}
-                              r="15"
-                              fill="none"
-                              stroke={getSeverityColor(hazard.severity)}
-                              strokeWidth="3"
-                              opacity="0.8"
-                              className="animate-ping"
-                            />
-                            <circle
-                              cx={hazard.x}
-                              cy={hazard.y}
-                              r="25"
-                              fill="none"
-                              stroke={getSeverityColor(hazard.severity)}
-                              strokeWidth="2"
-                              opacity="0.4"
-                              className="animate-ping"
-                              style={{ animationDelay: "0.2s" }}
-                            />
-                          </>
-                        )}
+                            : "💧"}{" "}
+                        </text>
                       </g>
                     ))}
                   {/* Vehicle */}
@@ -796,32 +770,48 @@ export default function InteractiveDemo() {
                         height="6"
                         fill="#DBEAFE"
                         rx="1"
-                      />
+                      />{" "}
                       {/* Vehicle Direction Indicator */}
-                      <polygon points="0,-12 4,-8 -4,-8" fill="#10B981" />
-
-                      {/* GPS Pulse */}
+                      <polygon points="0,-12 4,-8 -4,-8" fill="#10B981" />{" "}
+                      {/* GPS Pulse rings with dynamic color based on hazards */}
                       <circle
                         cx="0"
                         cy="0"
-                        r="20"
-                        stroke="#229799"
+                        r="15"
+                        stroke={getVehicleRingColor()}
                         strokeWidth="2"
+                        fill="none"
+                        opacity="0.6"
+                        className="animate-pulse"
+                      />
+                      <circle
+                        cx="0"
+                        cy="0"
+                        r="25"
+                        stroke={getVehicleRingColor()}
+                        strokeWidth="1"
                         fill="none"
                         opacity="0.3"
                         className="animate-ping"
                       />
-
                       {/* Alert indicator */}
                       {vehicle.hasAlert && (
                         <>
+                          {" "}
                           <circle
                             cx="0"
                             cy="-15"
                             r="4"
                             fill="#F59E0B"
-                            className="animate-pulse"
-                          />
+                            className="alert-indicator"
+                          >
+                            <animate
+                              attributeName="r"
+                              values="4;6;4"
+                              dur="0.8s"
+                              repeatCount="indefinite"
+                            />
+                          </circle>
                           <text
                             x="0"
                             y="-13"
@@ -865,7 +855,7 @@ export default function InteractiveDemo() {
                           <span className="ml-2 text-gray-900 font-medium capitalize">
                             {selectedHazard.type}
                           </span>
-                        </div>
+                        </div>{" "}
                         <div>
                           <span className="text-sm text-gray-600">
                             Severity:
@@ -882,11 +872,15 @@ export default function InteractiveDemo() {
                           </span>
                         </div>
                         <div>
-                          <span className="text-sm text-gray-600">
-                            Route Cost Impact:
-                          </span>
+                          <span className="text-sm text-gray-600">Impact:</span>
                           <span className="ml-2 text-gray-900 font-medium">
-                            +{selectedHazard.cost} points
+                            {selectedHazard.severity === "critical"
+                              ? "High vehicle damage risk"
+                              : selectedHazard.severity === "high"
+                              ? "Moderate vehicle damage risk"
+                              : selectedHazard.severity === "medium"
+                              ? "Minor vehicle impact"
+                              : "Minimal impact"}
                           </span>
                         </div>
                       </div>
@@ -945,13 +939,8 @@ export default function InteractiveDemo() {
                       <div>
                         <span className="text-white/70">Time:</span>
                         <span className="text-white ml-1">
+                          {" "}
                           {route.estimatedTime} min
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-white/70">Cost:</span>
-                        <span className="text-white ml-1">
-                          {route.totalCost} pts
                         </span>
                       </div>
                       <div>
@@ -1091,18 +1080,18 @@ export default function InteractiveDemo() {
                   <div className="border-t border-white/20 pt-4">
                     <h4 className="text-white font-semibold mb-3">
                       Route Performance
-                    </h4>
+                    </h4>{" "}
                     <div className="grid grid-cols-2 gap-3 text-xs">
                       <div className="bg-white/5 rounded-lg p-3">
-                        <div className="text-white/70">Efficiency Score</div>
+                        <div className="text-white/70">Route Quality</div>
                         <div className="text-white font-bold text-lg">
-                          {Math.round(
-                            100 -
-                              routes.find((r) => r.id === selectedRoute)!
-                                .totalCost /
-                                2
-                          )}
-                          %
+                          {routes.find((r) => r.id === selectedRoute)!
+                            .hazardCount < 3
+                            ? "95%"
+                            : routes.find((r) => r.id === selectedRoute)!
+                                .hazardCount < 6
+                            ? "78%"
+                            : "62%"}
                         </div>
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
@@ -1115,18 +1104,6 @@ export default function InteractiveDemo() {
                                 .hazardCount < 6
                             ? "B"
                             : "C"}
-                        </div>
-                      </div>
-                      <div className="bg-white/5 rounded-lg p-3">
-                        <div className="text-white/70">Cost Savings</div>
-                        <div className="text-white font-bold text-lg">
-                          $
-                          {Math.round(
-                            (100 -
-                              routes.find((r) => r.id === selectedRoute)!
-                                .totalCost) *
-                              2
-                          )}
                         </div>
                       </div>
                       <div className="bg-white/5 rounded-lg p-3">
