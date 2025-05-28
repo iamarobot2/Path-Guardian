@@ -43,6 +43,16 @@ export default function Hero() {
     ],
     []
   );
+  const scrollToInteractiveDemo = () => {
+    const element = document.getElementById("interactive-demo");
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   useEffect(() => {
     const locations = [
       "Starting Journey",
@@ -108,19 +118,21 @@ export default function Hero() {
             <p className="text-lg md:text-xl mb-6 md:mb-8 text-emerald-100 leading-relaxed">
               Experience real-time road damage detection with AI-powered alerts,
               dynamic route optimization, and intelligent maintenance planning.
-            </p>
+            </p>{" "}
             <div className="flex flex-col sm:flex-row gap-4 mb-6 md:mb-8">
-              <button className="bg-white text-[#229799] px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all duration-300 shadow-xl transform hover:scale-105 hover:shadow-2xl">
+              <button
+                onClick={scrollToInteractiveDemo}
+                className="bg-white text-[#229799] px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all duration-300 shadow-xl transform hover:scale-105 hover:shadow-2xl"
+              >
                 See Path Guardian in Action
               </button>
               <button className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-white hover:text-[#229799] transition-all duration-300 transform hover:scale-105">
                 Watch Live Demo
               </button>
-            </div>
-
+            </div>{" "}
             {/* Real-time stats */}
             <div className="grid grid-cols-3 gap-3 md:gap-4 text-center">
-              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
                   98%
                 </div>
@@ -128,7 +140,7 @@ export default function Hero() {
                   Detection Accuracy
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
                   15ms
                 </div>
@@ -136,7 +148,7 @@ export default function Hero() {
                   Response Time
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+              <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
                   24/7
                 </div>
@@ -447,7 +459,7 @@ export default function Hero() {
                         </svg>
 
                         {/* Navigation Controls Overlay */}
-                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur rounded-xl p-2 shadow-lg">
+                        <div className="absolute top-4 right-4 bg-white/80 backdrop-blur-lg rounded-xl p-2 shadow-lg border border-white/30">
                           <button className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center mb-2">
                             <svg
                               className="w-4 h-4 text-gray-600"
@@ -488,14 +500,15 @@ export default function Hero() {
                               : "translate-y-4 opacity-0 scale-95 pointer-events-none"
                           }`}
                         >
+                          {" "}
                           <div
-                            className={`p-3 rounded-lg border-l-4 shadow-xl backdrop-blur-sm ${
+                            className={`p-3 rounded-lg border-l-4 shadow-xl backdrop-blur-lg ${
                               potholes[currentPothole]?.severity === "High"
-                                ? "bg-gradient-to-r from-red-50/95 to-red-100/95 border-red-500"
+                                ? "bg-gradient-to-r from-red-50/90 to-red-100/90 border-red-500"
                                 : potholes[currentPothole]?.severity ===
                                   "Medium"
-                                ? "bg-gradient-to-r from-yellow-50/95 to-orange-100/95 border-yellow-500"
-                                : "bg-gradient-to-r from-green-50/95 to-emerald-100/95 border-green-500"
+                                ? "bg-gradient-to-r from-yellow-50/90 to-orange-100/90 border-yellow-500"
+                                : "bg-gradient-to-r from-green-50/90 to-emerald-100/90 border-green-500"
                             }`}
                           >
                             <div className="flex items-center justify-between">
