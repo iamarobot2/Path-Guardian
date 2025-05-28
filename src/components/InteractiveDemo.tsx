@@ -43,7 +43,7 @@ export default function InteractiveDemo() {
     null
   );
   const [isVerticalLayout, setIsVerticalLayout] = useState(false);
-
+  
   // Use refs for animation state to avoid unnecessary re-renders
   const vehicleRef = useRef<Vehicle>({
     id: "vehicle1",
@@ -106,7 +106,7 @@ export default function InteractiveDemo() {
       // Calculate the direction vector
       const dx = nextPos.x - currentPos.x;
       const dy = nextPos.y - currentPos.y;
-
+      
       // Calculate angle in degrees
       let angle = Math.atan2(dy, dx) * (180 / Math.PI);
 
@@ -120,47 +120,29 @@ export default function InteractiveDemo() {
   );
 
   // Get route-specific control points
-  const getRouteControlPoints = useCallback(
-    (routeId: string) => {
-      if (isVerticalLayout) {
-        const start = { x: 50, y: 30 };
-        const end = { x: 65, y: 470 };
-        if (routeId === "route1") {
-          return { start, cp1: { x: 25, y: 120 }, cp2: { x: 20, y: 350 }, end };
-        } else if (routeId === "route2") {
-          return { start, cp1: { x: 52, y: 150 }, cp2: { x: 58, y: 350 }, end };
-        } else {
-          return { start, cp1: { x: 75, y: 180 }, cp2: { x: 80, y: 320 }, end };
-        }
+  const getRouteControlPoints = useCallback((routeId: string) => {
+    if (isVerticalLayout) {
+      const start = { x: 50, y: 30 };
+      const end = { x: 65, y: 470 };
+      if (routeId === "route1") {
+        return { start, cp1: { x: 25, y: 120 }, cp2: { x: 20, y: 350 }, end };
+      } else if (routeId === "route2") {
+        return { start, cp1: { x: 52, y: 150 }, cp2: { x: 58, y: 350 }, end };
       } else {
-        const start = { x: 50, y: 150 };
-        const end = { x: 650, y: 150 };
-        if (routeId === "route1") {
-          return {
-            start,
-            cp1: { x: 200, y: 100 },
-            cp2: { x: 450, y: 80 },
-            end,
-          };
-        } else if (routeId === "route2") {
-          return {
-            start,
-            cp1: { x: 250, y: 140 },
-            cp2: { x: 450, y: 145 },
-            end,
-          };
-        } else {
-          return {
-            start,
-            cp1: { x: 200, y: 200 },
-            cp2: { x: 450, y: 220 },
-            end,
-          };
-        }
+        return { start, cp1: { x: 75, y: 180 }, cp2: { x: 80, y: 320 }, end };
       }
-    },
-    [isVerticalLayout]
-  );
+    } else {
+      const start = { x: 50, y: 150 };
+      const end = { x: 650, y: 150 };
+      if (routeId === "route1") {
+        return { start, cp1: { x: 200, y: 100 }, cp2: { x: 450, y: 80 }, end };
+      } else if (routeId === "route2") {
+        return { start, cp1: { x: 250, y: 140 }, cp2: { x: 450, y: 145 }, end };
+      } else {
+        return { start, cp1: { x: 200, y: 200 }, cp2: { x: 450, y: 220 }, end };
+      }
+    }
+  }, [isVerticalLayout]);
 
   // Helper function to get position on route curve based on route ID
   const getRoutePosition = useCallback(
@@ -353,12 +335,11 @@ export default function InteractiveDemo() {
       // Check for hazard alerts with optimized detection
       let hasAlert = false;
       activeHazardsRef.current.clear();
-
+      
       const routeHazards = hazards.filter((h) => h.routeId === selectedRoute);
       for (const hazard of routeHazards) {
         const distance = Math.sqrt(
-          Math.pow(hazard.x - position.x, 2) +
-            Math.pow(hazard.y - position.y, 2)
+          Math.pow(hazard.x - position.x, 2) + Math.pow(hazard.y - position.y, 2)
         );
         if (distance < 30) {
           hasAlert = true;
@@ -392,14 +373,7 @@ export default function InteractiveDemo() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [
-    routes,
-    hazards,
-    selectedRoute,
-    calculateVehicleAngle,
-    getRoutePosition,
-    getRouteControlPoints,
-  ]);
+  }, [routes, hazards, selectedRoute, calculateVehicleAngle, getRoutePosition, getRouteControlPoints]);
 
   const getSeverityColor = (severity: RouteHazard["severity"]) => {
     switch (severity) {
@@ -736,7 +710,7 @@ export default function InteractiveDemo() {
                     />
                     {/* Vehicle Direction Indicator */}
                     <polygon points="0,-12 4,-8 -4,-8" fill="#10B981" />
-
+                    
                     {/* GPS Pulse rings with dynamic color based on hazards */}
                     <circle
                       cx="0"
