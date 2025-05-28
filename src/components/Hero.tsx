@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 
 export default function Hero() {
   const [currentPothole, setCurrentPothole] = useState(0);
@@ -10,6 +10,9 @@ export default function Hero() {
   const [currentLocation, setCurrentLocation] = useState("Starting Location");
   const [timeRemaining, setTimeRemaining] = useState("23 min");
   const [distanceRemaining, setDistanceRemaining] = useState("15.2 km");
+  const [alertedPotholes, setAlertedPotholes] = useState(new Set());
+  const [isInteractive, setIsInteractive] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const potholes = useMemo(
     () => [
@@ -68,78 +71,108 @@ export default function Hero() {
       setTimeRemaining(`${remaining} min`);
       setDistanceRemaining(`${(15.2 - progress * 0.152).toFixed(1)} km`);
 
-      // Show alert when approaching potholes (bottom to top movement)
+      // Show alert when approaching potholes (only once per pothole)
       const vehicleY = 320 - vehiclePosition * 2.7; // Move from bottom to top
       potholes.forEach((pothole, index) => {
-        const distance = Math.abs(vehicleY - pothole.y);
-        if (distance < 30 && Math.random() > 0.7) {
+        const distance = vehicleY - pothole.y;
+
+        // Show alert when 50 pixels before reaching pothole (only once)
+        if (
+          distance <= 50 &&
+          distance > 0 &&
+          !alertedPotholes.has(pothole.id)
+        ) {
           setCurrentPothole(index);
           setShowAlert(true);
-          setTimeout(() => setShowAlert(false), 3000);
+          setAlertedPotholes((prev) => new Set([...prev, pothole.id]));
+          setTimeout(() => setShowAlert(false), 2500);
+        } // Reset alerts when vehicle passes all potholes
+        if (vehiclePosition > 95) {
+          setAlertedPotholes(new Set());
         }
       });
     }, 100);
 
     return () => clearInterval(interval);
-  }, [vehiclePosition, potholes]);
-
+  }, [vehiclePosition, potholes, alertedPotholes]);
   return (
-    <header className="bg-gradient-to-br from-[#229799] via-[#1a7373] to-[#144d4d] pt-28 pb-20 px-4 overflow-hidden">
-      <div className="container mx-auto">
-        <div className="flex flex-col lg:flex-row items-center gap-12">
+    <header className="bg-gradient-to-br from-[#229799] via-[#1a7373] to-[#144d4d] pt-16 md:pt-28 pb-12 md:pb-20 px-4 overflow-hidden min-h-screen flex items-center">
+      <div className="container mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[calc(100vh-8rem)]">
           {/* Left Content */}
-          <div className="lg:w-1/2 text-white">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <div className="text-white order-2 lg:order-1 flex flex-col justify-center">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 md:mb-6 leading-tight">
               Smart Road Monitoring &{" "}
               <span className="text-yellow-300">AI-Powered</span> Routing
             </h1>
-            <p className="text-xl mb-8 text-emerald-100 leading-relaxed">
+            <p className="text-lg md:text-xl mb-6 md:mb-8 text-emerald-100 leading-relaxed">
               Experience real-time road damage detection with AI-powered alerts,
               dynamic route optimization, and intelligent maintenance planning.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
-              <button className="bg-white text-[#229799] px-8 py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all duration-300 shadow-xl transform hover:scale-105 hover:shadow-2xl">
+            <div className="flex flex-col sm:flex-row gap-4 mb-6 md:mb-8">
+              <button className="bg-white text-[#229799] px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-emerald-50 transition-all duration-300 shadow-xl transform hover:scale-105 hover:shadow-2xl">
                 See Path Guardian in Action
               </button>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-[#229799] transition-all duration-300 transform hover:scale-105">
+              <button className="border-2 border-white text-white px-6 md:px-8 py-3 md:py-4 rounded-full font-semibold hover:bg-white hover:text-[#229799] transition-all duration-300 transform hover:scale-105">
                 Watch Live Demo
               </button>
             </div>
 
             {/* Real-time stats */}
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-white/10 backdrop-blur rounded-lg p-3">
-                <div className="text-2xl font-bold text-yellow-300">98%</div>
-                <div className="text-sm text-emerald-100">
+            <div className="grid grid-cols-3 gap-3 md:gap-4 text-center">
+              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+                <div className="text-xl md:text-2xl font-bold text-yellow-300">
+                  98%
+                </div>
+                <div className="text-xs md:text-sm text-emerald-100">
                   Detection Accuracy
                 </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-lg p-3">
-                <div className="text-2xl font-bold text-yellow-300">15ms</div>
-                <div className="text-sm text-emerald-100">Response Time</div>
+              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+                <div className="text-xl md:text-2xl font-bold text-yellow-300">
+                  15ms
+                </div>
+                <div className="text-xs md:text-sm text-emerald-100">
+                  Response Time
+                </div>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-lg p-3">
-                <div className="text-2xl font-bold text-yellow-300">24/7</div>
-                <div className="text-sm text-emerald-100">Monitoring</div>
+              <div className="bg-white/10 backdrop-blur rounded-lg p-2 md:p-3">
+                <div className="text-xl md:text-2xl font-bold text-yellow-300">
+                  24/7
+                </div>
+                <div className="text-xs md:text-sm text-emerald-100">
+                  Monitoring
+                </div>
               </div>
             </div>
-          </div>{" "}
-          {/* Right Animation */}
-          <div className="lg:w-1/2 relative px-4 sm:px-0">
-            <div className="flex items-center justify-center gap-8">
-              {/* Modern Mobile Phone Mockup */}
-              <div className="relative transform hover:scale-105 transition-transform duration-300">
-                {/* Phone Shadow */}
-                <div className="absolute inset-0 bg-black/20 rounded-[3rem] transform translate-x-2 translate-y-2 blur-lg"></div>{" "}
-                {/* Phone Body */}
-                <div className="relative w-72 h-[650px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl">
-                  {/* Screen */}
-                  <div className="w-full h-full bg-black rounded-[2.5rem] relative overflow-hidden">
-                    {/* Notch */}
-                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-b-2xl z-10"></div>
+          </div>
 
-                    {/* Screen Content */}
-                    <div className="absolute inset-1 bg-white rounded-[2.25rem] overflow-hidden">
+          {/* Right Animation */}
+          <div className="order-1 lg:order-2 flex justify-center items-center">
+            <div className="flex items-center justify-center gap-4 lg:gap-8 w-full max-w-full">
+              {/* Interactive Mobile Phone Mockup */}
+              <div className="relative transform hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                {/* Phone Shadow */}
+                <div className="absolute inset-0 bg-black/20 rounded-[2.5rem] md:rounded-[3rem] transform translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 blur-lg"></div>{" "}
+                {/* Phone Body */}
+                <div
+                  className="relative w-64 h-[580px] md:w-72 md:h-[680px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer"
+                  onClick={() => setIsInteractive(!isInteractive)}
+                >
+                  {/* Screen */}
+                  <div className="w-full h-full bg-black rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-28 h-5 md:w-32 md:h-6 bg-black rounded-b-2xl z-10"></div>
+
+                    {/* Scrollable Screen Content */}
+                    <div
+                      ref={scrollRef}
+                      className="absolute inset-1 bg-white rounded-[1.75rem] md:rounded-[2.25rem] overflow-hidden overflow-y-auto scrollbar-hide"
+                      style={{
+                        height: "calc(100% - 8px)",
+                        scrollBehavior: isInteractive ? "auto" : "smooth",
+                      }}
+                    >
                       {/* Status Bar */}
                       <div className="bg-gradient-to-r from-[#229799] to-[#1a7373] text-white px-6 py-4 flex justify-between items-center">
                         <div className="flex items-center gap-3">
@@ -243,18 +276,18 @@ export default function Hero() {
                             strokeDasharray="15,15"
                             fill="none"
                           />{" "}
-                          {/* Side Roads */}
+                          {/* Side Roads - Synchronized with side animation */}
                           <rect
                             x="55"
-                            y="80"
+                            y="120"
                             width="70"
                             height="15"
                             fill="#6B7280"
                             opacity="0.7"
-                          />
+                          />{" "}
                           <rect
                             x="155"
-                            y="200"
+                            y="300"
                             width="70"
                             height="15"
                             fill="#6B7280"
@@ -506,7 +539,6 @@ export default function Hero() {
                             </div>
                           </div>
                         </div>
-
                         {/* Enhanced Route Options */}
                         <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 shadow-sm">
                           <div className="flex items-center justify-between mb-2">
@@ -569,8 +601,7 @@ export default function Hero() {
                               </span>
                             </div>
                           </div>
-                        </div>
-
+                        </div>{" "}
                         {/* Action Buttons */}
                         <div className="grid grid-cols-2 gap-2">
                           <button className="bg-gradient-to-r from-[#229799] to-[#1a7373] text-white p-2 rounded-lg text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2">
@@ -605,6 +636,126 @@ export default function Hero() {
                             </svg>
                             Report
                           </button>
+                        </div>
+                        {/* Additional Scrollable Content */}
+                        {/* Traffic Updates */}
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg p-3 shadow-sm">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2 mb-2">
+                            <svg
+                              className="w-4 h-4 text-blue-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            Traffic Updates
+                          </h4>
+                          <div className="space-y-1">
+                            <div className="text-xs text-gray-600">
+                              • Light traffic on Main St
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              • Construction on Highway 101
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              • Clear roads ahead
+                            </div>
+                          </div>
+                        </div>
+                        {/* Weather Conditions */}
+                        <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-lg p-3 shadow-sm">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2 mb-2">
+                            <svg
+                              className="w-4 h-4 text-green-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"
+                              />
+                            </svg>
+                            Road Conditions
+                          </h4>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-600">
+                              Clear, Dry
+                            </span>
+                            <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full">
+                              Good
+                            </span>
+                          </div>
+                        </div>
+                        {/* Recent Reports */}
+                        <div className="bg-gradient-to-br from-purple-50 to-pink-100 rounded-lg p-3 shadow-sm">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2 mb-2">
+                            <svg
+                              className="w-4 h-4 text-purple-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                            Recent Reports
+                          </h4>
+                          <div className="space-y-2">
+                            <div className="text-xs text-gray-600 p-2 bg-white rounded border-l-2 border-purple-400">
+                              Pothole reported on Oak St - 2 min ago
+                            </div>
+                            <div className="text-xs text-gray-600 p-2 bg-white rounded border-l-2 border-blue-400">
+                              Road surface issue fixed - 15 min ago
+                            </div>
+                          </div>
+                        </div>{" "}
+                        {/* Performance Stats */}
+                        <div className="bg-gradient-to-br from-orange-50 to-yellow-100 rounded-lg p-3 shadow-sm">
+                          <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2 mb-2">
+                            <svg
+                              className="w-4 h-4 text-orange-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                              />
+                            </svg>
+                            Today&apos;s Stats
+                          </h4>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div className="text-center bg-white rounded p-2">
+                              <div className="font-bold text-orange-600">
+                                47
+                              </div>
+                              <div className="text-gray-600">
+                                Hazards Avoided
+                              </div>
+                            </div>
+                            <div className="text-center bg-white rounded p-2">
+                              <div className="font-bold text-orange-600">
+                                12 min
+                              </div>
+                              <div className="text-gray-600">Time Saved</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -671,10 +822,10 @@ export default function Hero() {
                     y2="500"
                     stroke="#1F2937"
                     strokeWidth="2"
-                  />
-                  {/* Side Roads matching mobile mockup */}
+                  />{" "}
+                  {/* Side Roads - Exactly matching mobile mockup proportions */}
                   <rect
-                    x="-10"
+                    x="10"
                     y="120"
                     width="70"
                     height="15"
@@ -849,36 +1000,7 @@ export default function Hero() {
                       fill="white"
                     >
                       🏠
-                    </text>
-                  </g>
-                  {/* Road signs */}
-                  <g transform="translate(135, 150)">
-                    <rect
-                      x="0"
-                      y="0"
-                      width="30"
-                      height="20"
-                      fill="#1F2937"
-                      rx="2"
-                    />
-                    <text
-                      x="15"
-                      y="12"
-                      textAnchor="middle"
-                      className="text-xs"
-                      fill="white"
-                    >
-                      ROAD
-                    </text>
-                    <text
-                      x="15"
-                      y="18"
-                      textAnchor="middle"
-                      className="text-xs"
-                      fill="white"
-                    >
-                      WORK
-                    </text>
+                    </text>{" "}
                   </g>
                 </svg>
               </div>

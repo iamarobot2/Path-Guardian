@@ -45,3 +45,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #2563EB;
 }
+
+/* Hide scrollbar for mockup */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
