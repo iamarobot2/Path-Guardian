@@ -195,7 +195,7 @@ export default function Hero() {
                           </div>
                           <div>
                             <div className="font-bold text-sm">
-                              PathGuardian Nav
+                              PathGuardian
                             </div>
                             <div className="text-xs opacity-90">
                               Smart routing active
@@ -217,7 +217,7 @@ export default function Hero() {
                             </svg>
                           </div>
                         </div>
-                      </div>{" "}
+                      </div>
                       {/* Navigation Header */}
                       <div className="bg-gray-50 px-6 py-3 border-b">
                         <div className="flex items-center justify-between">
