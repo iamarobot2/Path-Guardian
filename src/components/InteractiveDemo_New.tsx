@@ -55,7 +55,7 @@ export default function InteractiveDemo() {
     hasAlert: false,
   });
   const activeHazardsRef = useRef<Set<string>>(new Set());
-  const animationRef = useRef<number | undefined>(undefined);
+  const animationRef = useRef<number>();
   const [, forceUpdate] = useState({});
 
   // Responsive layout detection
@@ -89,6 +89,7 @@ export default function InteractiveDemo() {
       Math.pow(t, 3) * p3.y;
     return { x, y };
   };
+
   // Optimized vehicle angle calculation with correct orientation
   const calculateVehicleAngle = useCallback(
     (
@@ -116,7 +117,7 @@ export default function InteractiveDemo() {
 
       return angle;
     },
-    []
+    [isVerticalLayout]
   );
 
   // Get route-specific control points
