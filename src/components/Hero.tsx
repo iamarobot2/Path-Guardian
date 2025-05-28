@@ -148,15 +148,15 @@ export default function Hero() {
           </div>
 
           {/* Right Animation */}
-          <div className="order-1 lg:order-2 flex justify-center items-center">
+          <div className="order-1 lg:order-2 flex justify-center items-center mt-8 md:mt-0">
             <div className="flex items-center justify-center gap-6 lg:gap-8 w-full max-w-full">
               {/* Interactive Mobile Phone Mockup */}
-              <div className="relative transform hover:scale-105 transition-transform duration-300 flex-shrink-0">
+              <div className="relative transform md:hover:scale-105 transition-transform duration-300 flex-shrink-0">
                 {/* Phone Shadow */}
                 <div className="absolute inset-0 bg-black/20 rounded-[2.5rem] md:rounded-[3rem] transform translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 blur-lg"></div>{" "}
                 {/* Phone Body */}
                 <div
-                  className="relative w-72 h-[640px] md:w-80 md:h-[720px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer transition-all duration-300"
+                  className="relative w-72 h-[600px] md:w-80 md:h-[680px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer transition-all duration-300"
                   onClick={() => setIsInteractive(!isInteractive)}
                   onTouchStart={() => setIsInteractive(!isInteractive)}
                 >
@@ -798,8 +798,9 @@ export default function Hero() {
                   viewBox="0 0 180 500"
                   className="drop-shadow-2xl"
                 >
+                  {" "}
                   {/* Road Surface - Vertical - Matching mockup exactly */}
-                  <rect x="75" y="0" width="30" height="500" fill="#374151" />
+                  <rect x="65" y="0" width="50" height="500" fill="#374151" />
                   {/* Road Markings - Vertical - Matching mockup exactly */}
                   <line
                     x1="90"
@@ -813,7 +814,7 @@ export default function Hero() {
                   />
                   {/* Side Roads - Exactly matching mobile mockup */}
                   <rect
-                    x="20"
+                    x="10"
                     y="150"
                     width="55"
                     height="15"
@@ -821,7 +822,7 @@ export default function Hero() {
                     opacity="0.7"
                   />
                   <rect
-                    x="105"
+                    x="115"
                     y="375"
                     width="70"
                     height="15"
