@@ -80,7 +80,6 @@ export default function InteractiveDemo() {
       Math.pow(t, 3) * p3.y;
     return { x, y };
   };
-
   // Helper function to calculate vehicle angle based on direction
   const calculateVehicleAngle = useCallback(
     (
@@ -90,19 +89,36 @@ export default function InteractiveDemo() {
       p2: { x: number; y: number },
       p3: { x: number; y: number }
     ) => {
-      const delta = 0.01;
+      const delta = 0.005; // Smaller delta for smoother angle calculation
       const nextT = Math.min(t + delta, 1);
       const currentPos = getPointOnCubicBezier(t, p0, p1, p2, p3);
       const nextPos = getPointOnCubicBezier(nextT, p0, p1, p2, p3);
 
-      const angle =
+      let angle =
         Math.atan2(nextPos.y - currentPos.y, nextPos.x - currentPos.x) *
         (180 / Math.PI);
 
-      // Fix orientation for large screens - adjust angle to prevent perpendicular orientation
+      // Fix orientation for large screens - ensure proper forward direction
       if (!isVerticalLayout) {
-        // For horizontal layout, ensure car points generally right
-        return angle > 90 || angle < -90 ? angle + 180 : angle;
+        // For horizontal layout, ensure car always points forward (right direction)
+        // Normalize angle to prevent perpendicular orientation
+        if (angle > 90) {
+          angle = angle - 180;
+        } else if (angle < -90) {
+          angle = angle + 180;
+        }
+        // Clamp extreme angles to prevent perpendicular orientation
+        angle = Math.max(-45, Math.min(45, angle));
+      } else {
+        // For vertical layout, ensure car points downward
+        if (angle < 0) {
+          angle = angle + 360;
+        }
+        if (angle > 180) {
+          angle = angle - 360;
+        }
+        // Ensure generally downward direction
+        angle = angle + 90;
       }
 
       return angle;
@@ -320,10 +336,17 @@ export default function InteractiveDemo() {
     setHazards(hazardData);
     setVehicles(initialVehicle);
   }, [isVerticalLayout, selectedRoute, getRoutePosition]);
-
-  // Vehicle animation along selected route
+  // Vehicle animation along selected route - Optimized for performance
   useEffect(() => {
+    let frameCount = 0;
     const animate = () => {
+      frameCount++;
+      // Only update every 2nd frame for better performance
+      if (frameCount % 2 !== 0) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+
       const activeHazardIds = new Set<string>();
 
       setVehicles((prev) =>
@@ -331,7 +354,7 @@ export default function InteractiveDemo() {
           const route = routes.find((r) => r.id === vehicle.currentRoute);
           if (!route) return vehicle;
 
-          let newProgress = vehicle.progress + 0.1; // Reduced speed for smoother movement
+          let newProgress = vehicle.progress + 0.08; // Slightly reduced speed for smoother movement
           if (newProgress > 100) newProgress = 0;
 
           const t = newProgress / 100;
@@ -375,7 +398,7 @@ export default function InteractiveDemo() {
             }
           }
 
-          // Check for hazard alerts
+          // Check for hazard alerts with reduced detection distance for better performance
           let hasAlert = false;
           const routeHazards = hazards.filter(
             (h) => h.routeId === vehicle.currentRoute
@@ -384,7 +407,8 @@ export default function InteractiveDemo() {
             const distance = Math.sqrt(
               Math.pow(hazard.x - newX, 2) + Math.pow(hazard.y - newY, 2)
             );
-            if (distance < 20) {
+            if (distance < 15) {
+              // Reduced detection distance
               hasAlert = true;
               activeHazardIds.add(hazard.id);
             }
@@ -509,25 +533,55 @@ export default function InteractiveDemo() {
                   viewBox={isVerticalLayout ? "0 0 100 500" : "0 0 700 300"}
                   className="w-full h-full relative z-10"
                 >
+                  {" "}
                   {/* Location Markers */}
                   <g>
-                    {/* Location A - Enhanced visibility */}
+                    {/* Location A - Enhanced visibility for large screens */}
                     <circle
                       cx={isVerticalLayout ? 50 : 50}
                       cy={isVerticalLayout ? 30 : 150}
-                      r="10"
+                      r="12"
                       fill="#22C55E"
                       stroke="white"
-                      strokeWidth="3"
+                      strokeWidth="4"
+                    />
+                    <circle
+                      cx={isVerticalLayout ? 50 : 50}
+                      cy={isVerticalLayout ? 30 : 150}
+                      r="18"
+                      fill="none"
+                      stroke="#22C55E"
+                      strokeWidth="2"
+                      opacity="0.5"
+                      className="animate-pulse"
                     />
                     <text
-                      x={isVerticalLayout ? 65 : 70}
+                      x={isVerticalLayout ? 65 : 75}
                       y={isVerticalLayout ? 38 : 158}
                       fill="white"
-                      fontSize="16"
+                      fontSize={isVerticalLayout ? "14" : "20"}
                       fontWeight="bold"
                       stroke="black"
-                      strokeWidth="0.5"
+                      strokeWidth="1"
+                    >
+                      A
+                    </text>
+                    {/* Location label background for better visibility */}
+                    <rect
+                      x={isVerticalLayout ? 60 : 70}
+                      y={isVerticalLayout ? 25 : 145}
+                      width={isVerticalLayout ? 16 : 20}
+                      height={isVerticalLayout ? 16 : 20}
+                      fill="rgba(34, 197, 94, 0.8)"
+                      rx="4"
+                    />
+                    <text
+                      x={isVerticalLayout ? 68 : 80}
+                      y={isVerticalLayout ? 38 : 158}
+                      fill="white"
+                      fontSize={isVerticalLayout ? "14" : "18"}
+                      fontWeight="bold"
+                      textAnchor="middle"
                     >
                       A
                     </text>
@@ -536,24 +590,30 @@ export default function InteractiveDemo() {
                     <circle
                       cx={isVerticalLayout ? 65 : 650}
                       cy={isVerticalLayout ? 470 : 150}
-                      r="10"
+                      r="12"
                       fill="#EF4444"
                       stroke="white"
-                      strokeWidth="3"
+                      strokeWidth="4"
+                    />
+                    <rect
+                      x={isVerticalLayout ? 75 : 665}
+                      y={isVerticalLayout ? 457 : 137}
+                      width={isVerticalLayout ? 16 : 20}
+                      height={isVerticalLayout ? 16 : 20}
+                      fill="rgba(239, 68, 68, 0.8)"
+                      rx="4"
                     />
                     <text
-                      x={isVerticalLayout ? 80 : 670}
-                      y={isVerticalLayout ? 478 : 158}
+                      x={isVerticalLayout ? 83 : 675}
+                      y={isVerticalLayout ? 470 : 150}
                       fill="white"
-                      fontSize="16"
+                      fontSize={isVerticalLayout ? "14" : "18"}
                       fontWeight="bold"
-                      stroke="black"
-                      strokeWidth="0.5"
+                      textAnchor="middle"
                     >
                       B
                     </text>
                   </g>
-
                   {/* Road base layers */}
                   {routes.map((route) => (
                     <g key={`road-${route.id}`}>
@@ -594,7 +654,6 @@ export default function InteractiveDemo() {
                       />
                     </g>
                   ))}
-
                   {/* Route labels */}
                   {routes.map((route) => (
                     <g key={`label-${route.id}`}>
@@ -627,7 +686,6 @@ export default function InteractiveDemo() {
                       </text>
                     </g>
                   ))}
-
                   {/* Hazards - only show for selected route */}
                   {hazards
                     .filter((hazard) => hazard.routeId === selectedRoute)
@@ -669,23 +727,35 @@ export default function InteractiveDemo() {
                             : hazard.type === "construction"
                             ? "🚧"
                             : "💧"}
-                        </text>
-                        {/* Active hazard pulse ring */}
+                        </text>{" "}
+                        {/* Active hazard pulse ring - Fixed positioning */}
                         {activeHazards.has(hazard.id) && (
-                          <circle
-                            cx={hazard.x}
-                            cy={hazard.y}
-                            r="20"
-                            fill="none"
-                            stroke={getSeverityColor(hazard.severity)}
-                            strokeWidth="2"
-                            opacity="0.6"
-                            className="animate-ping"
-                          />
+                          <>
+                            <circle
+                              cx={hazard.x}
+                              cy={hazard.y}
+                              r="15"
+                              fill="none"
+                              stroke={getSeverityColor(hazard.severity)}
+                              strokeWidth="3"
+                              opacity="0.8"
+                              className="animate-ping"
+                            />
+                            <circle
+                              cx={hazard.x}
+                              cy={hazard.y}
+                              r="25"
+                              fill="none"
+                              stroke={getSeverityColor(hazard.severity)}
+                              strokeWidth="2"
+                              opacity="0.4"
+                              className="animate-ping"
+                              style={{ animationDelay: "0.2s" }}
+                            />
+                          </>
                         )}
                       </g>
                     ))}
-
                   {/* Vehicle */}
                   {vehicles.map((vehicle) => (
                     <g
@@ -907,7 +977,6 @@ export default function InteractiveDemo() {
                 ))}
               </div>
             </div>
-
             {/* PathGuardian Benefits */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-4">
@@ -945,57 +1014,132 @@ export default function InteractiveDemo() {
                   </span>
                 </div>
               </div>
-            </div>
-
-            {/* Cost Breakdown */}
+            </div>{" "}
+            {/* Why Choose PathGuardian */}
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-4">
-                Current Route Analysis
+                Why Choose PathGuardian?
               </h3>
               {routes.find((r) => r.id === selectedRoute) && (
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Base Distance Cost</span>
-                    <span className="text-white font-medium">
-                      {Math.round(
-                        routes.find((r) => r.id === selectedRoute)!.distance * 2
-                      )}{" "}
-                      pts
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Hazard Penalty</span>
-                    <span className="text-red-300 font-medium">
-                      +
-                      {hazards
-                        .filter((h) => h.routeId === selectedRoute)
-                        .reduce((sum, h) => sum + h.cost, 0)}{" "}
-                      pts
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white/80">Traffic Impact</span>
-                    <span className="text-orange-300 font-medium">
-                      +
-                      {routes.find((r) => r.id === selectedRoute)!
-                        .trafficLevel === "high"
-                        ? 15
-                        : routes.find((r) => r.id === selectedRoute)!
-                            .trafficLevel === "medium"
-                        ? 8
-                        : 3}{" "}
-                      pts
-                    </span>
-                  </div>
-                  <hr className="border-white/20" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-white font-bold">
-                      Total Route Cost
-                    </span>
-                    <span className="text-white font-bold text-lg">
-                      {routes.find((r) => r.id === selectedRoute)!.totalCost}{" "}
-                      pts
-                    </span>
+                <div className="space-y-4">
+                  {selectedRoute === getRouteRecommendation() ? (
+                    <div className="bg-green-500/20 border border-green-400/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                        <span className="text-green-100 font-bold">
+                          Optimal Route Selected
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-sm text-green-50">
+                        <div className="flex items-start gap-2">
+                          <span>💰</span>
+                          <span>
+                            Save up to 40% on vehicle maintenance costs
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span>⛽</span>
+                          <span>
+                            Reduce fuel consumption by avoiding rough roads
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span>🚗</span>
+                          <span>
+                            Extend vehicle lifespan with smoother routes
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span>📊</span>
+                          <span>
+                            Real-time optimization based on current conditions
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-yellow-500/20 border border-yellow-400/30 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                        <span className="text-yellow-100 font-bold">
+                          Consider Our Recommendation
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-sm text-yellow-50">
+                        <div className="flex items-start gap-2">
+                          <span>⚠️</span>
+                          <span>
+                            Current route may have higher maintenance costs
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span>🔄</span>
+                          <span>
+                            Switch to recommended route for better savings
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span>🎯</span>
+                          <span>
+                            PathGuardian analyzes 1000+ factors for optimization
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="border-t border-white/20 pt-4">
+                    <h4 className="text-white font-semibold mb-3">
+                      Route Performance
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/70">Efficiency Score</div>
+                        <div className="text-white font-bold text-lg">
+                          {Math.round(
+                            100 -
+                              routes.find((r) => r.id === selectedRoute)!
+                                .totalCost /
+                                2
+                          )}
+                          %
+                        </div>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/70">Safety Rating</div>
+                        <div className="text-white font-bold text-lg">
+                          {routes.find((r) => r.id === selectedRoute)!
+                            .hazardCount < 3
+                            ? "A+"
+                            : routes.find((r) => r.id === selectedRoute)!
+                                .hazardCount < 6
+                            ? "B"
+                            : "C"}
+                        </div>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/70">Cost Savings</div>
+                        <div className="text-white font-bold text-lg">
+                          $
+                          {Math.round(
+                            (100 -
+                              routes.find((r) => r.id === selectedRoute)!
+                                .totalCost) *
+                              2
+                          )}
+                        </div>
+                      </div>
+                      <div className="bg-white/5 rounded-lg p-3">
+                        <div className="text-white/70">Time Efficiency</div>
+                        <div className="text-white font-bold text-lg">
+                          {
+                            routes.find((r) => r.id === selectedRoute)!
+                              .estimatedTime
+                          }
+                          min
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
