@@ -52,7 +52,6 @@ export default function Hero() {
       });
     }
   };
-
   useEffect(() => {
     const locations = [
       "Starting Journey",
@@ -63,48 +62,69 @@ export default function Hero() {
       "Near Destination",
     ];
 
-    const interval = setInterval(() => {
-      setVehiclePosition((prev) => (prev + 1) % 100);
+    let animationId: number;
+    let lastUpdateTime = 0;
+    const updateInterval = 16; // ~60fps (16ms between updates)
+    const speed = 0.15; // Vehicle movement speed per frame
 
-      // Update route progress
-      const progress = (vehiclePosition / 100) * 100;
-      setRouteProgress(progress);
+    const animate = (currentTime: number) => {
+      if (currentTime - lastUpdateTime >= updateInterval) {
+        setVehiclePosition((prev) => {
+          const newPos = (prev + speed) % 100;
 
-      // Update location based on progress
-      const locationIndex = Math.floor(
-        (vehiclePosition / 100) * locations.length
-      );
-      setCurrentLocation(locations[locationIndex] || "Near Destination");
+          // Update route progress
+          const progress = (newPos / 100) * 100;
+          setRouteProgress(progress);
 
-      // Update time and distance remaining
-      const remaining = Math.max(0, 23 - Math.floor(progress * 0.23));
-      setTimeRemaining(`${remaining} min`);
-      setDistanceRemaining(`${(15.2 - progress * 0.152).toFixed(1)} km`);
+          // Update location based on progress
+          const locationIndex = Math.floor((newPos / 100) * locations.length);
+          setCurrentLocation(locations[locationIndex] || "Near Destination");
 
-      // Show alert when approaching potholes (only once per pothole)
-      const vehicleY = 320 - vehiclePosition * 2.7; // Move from bottom to top
-      potholes.forEach((pothole, index) => {
-        const distance = vehicleY - pothole.y;
+          // Update time and distance remaining
+          const remaining = Math.max(0, 23 - Math.floor(progress * 0.23));
+          setTimeRemaining(`${remaining} min`);
+          setDistanceRemaining(`${(15.2 - progress * 0.152).toFixed(1)} km`);
 
-        // Show alert when 50 pixels before reaching pothole (only once)
-        if (
-          distance <= 50 &&
-          distance > 0 &&
-          !alertedPotholes.has(pothole.id)
-        ) {
-          setCurrentPothole(index);
-          setShowAlert(true);
-          setAlertedPotholes((prev) => new Set([...prev, pothole.id]));
-          setTimeout(() => setShowAlert(false), 2500);
-        } // Reset alerts when vehicle passes all potholes
-        if (vehiclePosition > 95) {
-          setAlertedPotholes(new Set());
-        }
-      });
-    }, 100);
+          // Show alert when approaching potholes (only once per pothole)
+          const vehicleY = 320 - newPos * 2.7; // Move from bottom to top
+          potholes.forEach((pothole, index) => {
+            const distance = vehicleY - pothole.y;
 
-    return () => clearInterval(interval);
-  }, [vehiclePosition, potholes, alertedPotholes]);
+            // Show alert when 50 pixels before reaching pothole (only once)
+            if (
+              distance <= 50 &&
+              distance > 0 &&
+              !alertedPotholes.has(pothole.id)
+            ) {
+              setCurrentPothole(index);
+              setShowAlert(true);
+              setAlertedPotholes((prev) => new Set([...prev, pothole.id]));
+              setTimeout(() => setShowAlert(false), 2500);
+            }
+          });
+
+          // Reset alerts when vehicle passes all potholes
+          if (newPos > 95) {
+            setAlertedPotholes(new Set());
+          }
+
+          return newPos;
+        });
+
+        lastUpdateTime = currentTime;
+      }
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [potholes, alertedPotholes]);
   return (
     <header className="bg-gradient-to-br from-[#229799] via-[#1a7373] to-[#144d4d] pt-16 md:pt-28 pb-12 md:pb-20 px-4 overflow-hidden min-h-screen flex items-center">
       <div className="container mx-auto max-w-7xl">
@@ -308,12 +328,15 @@ export default function Hero() {
                             height="15"
                             fill="#6B7280"
                             opacity="0.7"
-                          />
+                          />{" "}
                           {/* Moving Vehicle (Bottom to Top) */}
                           <g
                             transform={`translate(140, ${
                               320 - vehiclePosition * 2.7
                             })`}
+                            style={{
+                              transition: "transform 16ms linear",
+                            }}
                           >
                             {/* Vehicle Shadow */}
                             <ellipse
@@ -937,6 +960,9 @@ export default function Hero() {
                   <g
                     transform={`translate(90, ${470 - vehiclePosition * 4.2})`}
                     className="drop-shadow-lg"
+                    style={{
+                      transition: "transform 16ms linear",
+                    }}
                   >
                     {/* Vehicle Shadow */}
                     <ellipse
