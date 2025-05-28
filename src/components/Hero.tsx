@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export default function Hero() {
   const [currentPothole, setCurrentPothole] = useState(0);
@@ -10,32 +10,36 @@ export default function Hero() {
   const [currentLocation, setCurrentLocation] = useState("Starting Location");
   const [timeRemaining, setTimeRemaining] = useState("23 min");
   const [distanceRemaining, setDistanceRemaining] = useState("15.2 km");
-  const potholes = [
-    {
-      id: 1,
-      x: 140,
-      y: 280,
-      severity: "Medium",
-      distance: "50m",
-      color: "#F59E0B",
-    },
-    {
-      id: 2,
-      x: 140,
-      y: 180,
-      severity: "High",
-      distance: "25m",
-      color: "#EF4444",
-    },
-    {
-      id: 3,
-      x: 140,
-      y: 80,
-      severity: "Low",
-      distance: "75m",
-      color: "#10B981",
-    },
-  ];
+
+  const potholes = useMemo(
+    () => [
+      {
+        id: 1,
+        x: 140,
+        y: 280,
+        severity: "Medium",
+        distance: "50m",
+        color: "#F59E0B",
+      },
+      {
+        id: 2,
+        x: 140,
+        y: 180,
+        severity: "High",
+        distance: "25m",
+        color: "#EF4444",
+      },
+      {
+        id: 3,
+        x: 140,
+        y: 80,
+        severity: "Low",
+        distance: "75m",
+        color: "#10B981",
+      },
+    ],
+    []
+  );
   useEffect(() => {
     const locations = [
       "Starting Journey",
@@ -126,9 +130,9 @@ export default function Hero() {
               {/* Modern Mobile Phone Mockup */}
               <div className="relative transform hover:scale-105 transition-transform duration-300">
                 {/* Phone Shadow */}
-                <div className="absolute inset-0 bg-black/20 rounded-[3rem] transform translate-x-2 translate-y-2 blur-lg"></div>
+                <div className="absolute inset-0 bg-black/20 rounded-[3rem] transform translate-x-2 translate-y-2 blur-lg"></div>{" "}
                 {/* Phone Body */}
-                <div className="relative w-72 h-[600px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                <div className="relative w-72 h-[650px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl">
                   {/* Screen */}
                   <div className="w-full h-full bg-black rounded-[2.5rem] relative overflow-hidden">
                     {/* Notch */}
@@ -238,13 +242,12 @@ export default function Hero() {
                             strokeWidth="2"
                             strokeDasharray="15,15"
                             fill="none"
-                          />
-
+                          />{" "}
                           {/* Side Roads */}
                           <rect
-                            x="80"
+                            x="55"
                             y="80"
-                            width="80"
+                            width="70"
                             height="15"
                             fill="#6B7280"
                             opacity="0.7"
@@ -252,12 +255,11 @@ export default function Hero() {
                           <rect
                             x="155"
                             y="200"
-                            width="80"
+                            width="70"
                             height="15"
                             fill="#6B7280"
                             opacity="0.7"
                           />
-
                           {/* Moving Vehicle (Bottom to Top) */}
                           <g
                             transform={`translate(140, ${
@@ -324,7 +326,6 @@ export default function Hero() {
                               style={{ animationDelay: "0.5s" }}
                             />
                           </g>
-
                           {/* Potholes positioned vertically */}
                           {potholes.map((pothole) => (
                             <g key={pothole.id}>
@@ -358,7 +359,6 @@ export default function Hero() {
                               />
                             </g>
                           ))}
-
                           {/* Destination Marker */}
                           <g transform="translate(140, 20)">
                             <circle
@@ -388,7 +388,6 @@ export default function Hero() {
                               className="animate-ping"
                             />
                           </g>
-
                           {/* Starting Point */}
                           <g transform="translate(140, 300)">
                             <circle
@@ -443,9 +442,9 @@ export default function Hero() {
                             </svg>
                           </button>{" "}
                         </div>
-                      </div>
+                      </div>{" "}
                       {/* Alert Section */}
-                      <div className="px-6 py-4 space-y-3">
+                      <div className="px-4 py-2 space-y-2">
                         <div
                           className={`transform transition-all duration-500 ${
                             showAlert
@@ -454,7 +453,7 @@ export default function Hero() {
                           }`}
                         >
                           <div
-                            className={`p-4 rounded-xl border-l-4 shadow-lg ${
+                            className={`p-3 rounded-lg border-l-4 shadow-lg ${
                               potholes[currentPothole]?.severity === "High"
                                 ? "bg-gradient-to-r from-red-50 to-red-100 border-red-500"
                                 : potholes[currentPothole]?.severity ===
@@ -464,9 +463,9 @@ export default function Hero() {
                             }`}
                           >
                             <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
                                 <div
-                                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                     potholes[currentPothole]?.severity ===
                                     "High"
                                       ? "bg-red-500"
@@ -476,13 +475,13 @@ export default function Hero() {
                                       : "bg-green-500"
                                   }`}
                                 >
-                                  <span className="text-white text-lg">⚠️</span>
+                                  <span className="text-white text-sm">⚠️</span>
                                 </div>
                                 <div>
-                                  <h3 className="font-bold text-gray-800">
+                                  <h3 className="font-bold text-gray-800 text-sm">
                                     Road Hazard Detected
                                   </h3>
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-xs text-gray-600">
                                     {potholes[currentPothole]?.severity}{" "}
                                     severity •{" "}
                                     {potholes[currentPothole]?.distance} ahead
@@ -491,7 +490,7 @@ export default function Hero() {
                               </div>
                               <button className="text-gray-400 hover:text-gray-600">
                                 <svg
-                                  className="w-5 h-5"
+                                  className="w-4 h-4"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -509,11 +508,11 @@ export default function Hero() {
                         </div>
 
                         {/* Enhanced Route Options */}
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 shadow-sm">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="font-bold text-gray-800 flex items-center gap-2">
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 shadow-sm">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
                               <svg
-                                className="w-5 h-5 text-[#229799]"
+                                className="w-4 h-4 text-[#229799]"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -531,12 +530,12 @@ export default function Hero() {
                               AI
                             </span>
                           </div>
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border-l-4 border-[#229799]">
-                              <div className="flex items-center gap-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm border-l-4 border-[#229799]">
+                              <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-[#229799] rounded-full animate-pulse"></div>
                                 <div>
-                                  <span className="font-semibold text-[#229799]">
+                                  <span className="font-semibold text-[#229799] text-sm">
                                     Optimal Route
                                   </span>
                                   <p className="text-xs text-gray-500">
@@ -553,11 +552,11 @@ export default function Hero() {
                                 </p>
                               </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm opacity-60">
-                              <div className="flex items-center gap-3">
+                            <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm opacity-60">
+                              <div className="flex items-center gap-2">
                                 <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                                 <div>
-                                  <span className="font-medium text-gray-600">
+                                  <span className="font-medium text-gray-600 text-sm">
                                     Fastest Route
                                   </span>
                                   <p className="text-xs text-gray-400">
@@ -573,8 +572,8 @@ export default function Hero() {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <button className="bg-gradient-to-r from-[#229799] to-[#1a7373] text-white p-3 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <button className="bg-gradient-to-r from-[#229799] to-[#1a7373] text-white p-2 rounded-lg text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center justify-center gap-2">
                             <svg
                               className="w-4 h-4"
                               fill="none"
@@ -590,7 +589,7 @@ export default function Hero() {
                             </svg>
                             Navigate
                           </button>
-                          <button className="border-2 border-gray-200 text-gray-700 p-3 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2">
+                          <button className="border-2 border-gray-200 text-gray-700 p-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-all duration-200 flex items-center justify-center gap-2">
                             <svg
                               className="w-4 h-4"
                               fill="none"
@@ -634,7 +633,7 @@ export default function Hero() {
                     Smart
                   </span>
                 </div>
-              </div>{" "}
+              </div>
               {/* Enhanced Vertical Road Animation */}
               <div className="hidden lg:block relative">
                 <svg
@@ -645,7 +644,6 @@ export default function Hero() {
                 >
                   {/* Road Surface - Vertical */}
                   <rect x="60" y="0" width="60" height="500" fill="#374151" />
-
                   {/* Road Markings - Vertical */}
                   <line
                     x1="90"
@@ -656,8 +654,7 @@ export default function Hero() {
                     strokeWidth="3"
                     strokeDasharray="25,25"
                     opacity="0.8"
-                  />
-
+                  />{" "}
                   {/* Road Edges */}
                   <line
                     x1="60"
@@ -675,7 +672,23 @@ export default function Hero() {
                     stroke="#1F2937"
                     strokeWidth="2"
                   />
-
+                  {/* Side Roads matching mobile mockup */}
+                  <rect
+                    x="-10"
+                    y="120"
+                    width="70"
+                    height="15"
+                    fill="#6B7280"
+                    opacity="0.7"
+                  />
+                  <rect
+                    x="120"
+                    y="300"
+                    width="70"
+                    height="15"
+                    fill="#6B7280"
+                    opacity="0.7"
+                  />
                   {/* Potholes on vertical road */}
                   <g>
                     <circle
@@ -734,7 +747,6 @@ export default function Hero() {
                       ⚠
                     </text>
                   </g>
-
                   {/* Moving Vehicle - Bottom to Top */}
                   <g
                     transform={`translate(90, ${450 - vehiclePosition * 4})`}
@@ -781,7 +793,6 @@ export default function Hero() {
                     <circle cx="-4" cy="-14" r="1.5" fill="#FBBF24" />
                     <circle cx="4" cy="-14" r="1.5" fill="#FBBF24" />
                   </g>
-
                   {/* Detection Waves around moving vehicle */}
                   <circle
                     cx="90"
@@ -804,7 +815,6 @@ export default function Hero() {
                     className="animate-ping"
                     style={{ animationDelay: "0.5s" }}
                   />
-
                   {/* Destination marker */}
                   <g transform="translate(90, 30)">
                     <circle cx="0" cy="0" r="18" fill="#10B981" opacity="0.9" />
@@ -828,7 +838,6 @@ export default function Hero() {
                       className="animate-ping"
                     />
                   </g>
-
                   {/* Starting point */}
                   <g transform="translate(90, 470)">
                     <circle cx="0" cy="0" r="15" fill="#229799" opacity="0.9" />
@@ -842,7 +851,6 @@ export default function Hero() {
                       🏠
                     </text>
                   </g>
-
                   {/* Road signs */}
                   <g transform="translate(135, 150)">
                     <rect
