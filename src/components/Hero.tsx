@@ -7,11 +7,10 @@ export default function Hero() {
   const [showAlert, setShowAlert] = useState(false);
   const [vehiclePosition, setVehiclePosition] = useState(0);
   const [routeProgress, setRouteProgress] = useState(0);
-  const [currentLocation, setCurrentLocation] = useState("Starting Location");
-  const [timeRemaining, setTimeRemaining] = useState("23 min");
-  const [distanceRemaining, setDistanceRemaining] = useState("15.2 km");
+  const [currentLocation, setCurrentLocation] = useState("Kochi Marine Drive");
+  const [timeRemaining, setTimeRemaining] = useState("90 min");
+  const [distanceRemaining, setDistanceRemaining] = useState("75.0 km");
   const [alertedPotholes, setAlertedPotholes] = useState(new Set());
-  const [isInteractive, setIsInteractive] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const potholes = useMemo(
@@ -54,18 +53,17 @@ export default function Hero() {
   };
   useEffect(() => {
     const locations = [
-      "Starting Journey",
-      "Main Street",
-      "City Center",
-      "Highway 101",
-      "Downtown Area",
-      "Near Destination",
+      "Kochi Marine Drive",
+      "Kaloor Junction",
+      "Edappally Toll",
+      "Angamaly",
+      "Chalakudy",
+      "Thrissur City",
     ];
-
     let animationId: number;
     let lastUpdateTime = 0;
     const updateInterval = 16; // ~60fps (16ms between updates)
-    const speed = 0.15; // Vehicle movement speed per frame
+    const speed = 0.15; // Vehicle movement speed per frame (reduced for smoother movement)
 
     const animate = (currentTime: number) => {
       if (currentTime - lastUpdateTime >= updateInterval) {
@@ -74,16 +72,12 @@ export default function Hero() {
 
           // Update route progress
           const progress = (newPos / 100) * 100;
-          setRouteProgress(progress);
-
-          // Update location based on progress
+          setRouteProgress(progress); // Update location based on progress
           const locationIndex = Math.floor((newPos / 100) * locations.length);
-          setCurrentLocation(locations[locationIndex] || "Near Destination");
-
-          // Update time and distance remaining
-          const remaining = Math.max(0, 23 - Math.floor(progress * 0.23));
+          setCurrentLocation(locations[locationIndex] || "Thrissur City"); // Update time and distance remaining
+          const remaining = Math.max(0, 90 - Math.floor(progress * 0.9));
           setTimeRemaining(`${remaining} min`);
-          setDistanceRemaining(`${(15.2 - progress * 0.152).toFixed(1)} km`);
+          setDistanceRemaining(`${(75.0 - progress * 0.75).toFixed(1)} km`);
 
           // Show alert when approaching potholes (only once per pothole)
           const vehicleY = 320 - newPos * 2.7; // Move from bottom to top
@@ -150,30 +144,30 @@ export default function Hero() {
                 Watch Live Demo
               </button>
             </div>{" "}
-            {/* Real-time stats */}
+            {/* PathGuardian Impact Stats */}
             <div className="grid grid-cols-3 gap-3 md:gap-4 text-center">
               <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
-                  98%
+                  45%
                 </div>
                 <div className="text-xs md:text-sm text-emerald-100">
-                  Detection Accuracy
+                  Fewer Road Hazards
                 </div>
               </div>
               <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
-                  15ms
+                  ₹25k
                 </div>
                 <div className="text-xs md:text-sm text-emerald-100">
-                  Response Time
+                  Avg. Savings/Year
                 </div>
               </div>
               <div className="bg-white/15 backdrop-blur-lg rounded-lg p-2 md:p-3 border border-white/20 shadow-lg">
                 <div className="text-xl md:text-2xl font-bold text-yellow-300">
-                  24/7
+                  30%
                 </div>
                 <div className="text-xs md:text-sm text-emerald-100">
-                  Monitoring
+                  Faster Routes
                 </div>
               </div>
             </div>
@@ -187,26 +181,18 @@ export default function Hero() {
                 {/* Phone Shadow */}
                 <div className="absolute inset-0 bg-black/20 rounded-[2.5rem] md:rounded-[3rem] transform translate-x-1 translate-y-1 md:translate-x-2 md:translate-y-2 blur-lg"></div>{" "}
                 {/* Phone Body */}
-                <div
-                  className="relative w-72 h-[600px] md:w-80 md:h-[680px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl cursor-pointer transition-all duration-300"
-                  onClick={() => setIsInteractive(!isInteractive)}
-                  onTouchStart={() => setIsInteractive(!isInteractive)}
-                >
+                <div className="relative w-72 h-[600px] md:w-80 md:h-[680px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] md:rounded-[3rem] p-1.5 md:p-2 shadow-2xl transition-all duration-300">
                   {/* Screen */}
                   <div className="w-full h-full bg-black rounded-[2rem] md:rounded-[2.5rem] relative overflow-hidden">
                     {/* Punch-hole Camera */}
                     <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-4 h-4 md:w-5 md:h-5 bg-black rounded-full z-10 border-2 border-gray-700"></div>
-                    {/* Scrollable Screen Content */}
+                    {/* Scrollable Screen Content */}{" "}
                     <div
                       ref={scrollRef}
-                      className={`absolute inset-1 bg-white rounded-[1.75rem] md:rounded-[2.25rem] overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-300 ${
-                        isInteractive
-                          ? "ring-2 ring-[#229799] ring-opacity-50"
-                          : ""
-                      }`}
+                      className="absolute inset-1 bg-white rounded-[1.75rem] md:rounded-[2.25rem] overflow-hidden overflow-y-auto scrollbar-hide transition-all duration-300"
                       style={{
                         height: "calc(100% - 8px)",
-                        scrollBehavior: isInteractive ? "auto" : "smooth",
+                        scrollBehavior: "smooth",
                       }}
                     >
                       {/* Status Bar */}
@@ -430,7 +416,7 @@ export default function Hero() {
                                 className="animate-pulse"
                               />
                             </g>
-                          ))}
+                          ))}{" "}
                           {/* Destination Marker */}
                           <g transform="translate(140, 20)">
                             <circle
@@ -447,7 +433,7 @@ export default function Hero() {
                               className="text-xs font-bold"
                               fill="white"
                             >
-                              🏢
+                              🛕
                             </text>
                             <circle
                               cx="0"
@@ -459,7 +445,7 @@ export default function Hero() {
                               opacity="0.3"
                               className="animate-ping"
                             />
-                          </g>
+                          </g>{" "}
                           {/* Starting Point */}
                           <g transform="translate(140, 300)">
                             <circle
@@ -696,16 +682,16 @@ export default function Hero() {
                               />
                             </svg>
                             Traffic Updates
-                          </h4>
+                          </h4>{" "}
                           <div className="space-y-1">
                             <div className="text-xs text-gray-600">
-                              • Light traffic on Main St
+                              • Light traffic on Kaloor Junction
                             </div>
                             <div className="text-xs text-gray-600">
-                              • Construction on Highway 101
+                              • Construction on NH544 near Angamaly
                             </div>
                             <div className="text-xs text-gray-600">
-                              • Clear roads ahead
+                              • Clear roads to Thrissur City
                             </div>
                           </div>
                         </div>
@@ -753,13 +739,13 @@ export default function Hero() {
                               />
                             </svg>
                             Recent Reports
-                          </h4>
+                          </h4>{" "}
                           <div className="space-y-2">
                             <div className="text-xs text-gray-600 p-2 bg-white rounded border-l-2 border-purple-400">
-                              Pothole reported on Oak St - 2 min ago
+                              Pothole reported on Edappally Road - 2 min ago
                             </div>
                             <div className="text-xs text-gray-600 p-2 bg-white rounded border-l-2 border-blue-400">
-                              Road surface issue fixed - 15 min ago
+                              Road surface issue fixed in Chalakudy - 15 min ago
                             </div>
                           </div>
                         </div>{" "}
@@ -811,6 +797,7 @@ export default function Hero() {
                 </div>
                 <div className="absolute -bottom-6 -left-8 bg-gradient-to-r from-white to-gray-100 text-[#229799] px-3 py-1 rounded-full text-xs font-bold shadow-xl border border-gray-200">
                   <span className="flex items-center gap-1">
+                    {" "}
                     <svg
                       className="w-3 h-3"
                       fill="currentColor"
@@ -822,7 +809,7 @@ export default function Hero() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    {isInteractive ? "Interactive" : "Tap to Interact"}
+                    Smart Navigation
                   </span>
                 </div>
               </div>{" "}
@@ -1023,8 +1010,8 @@ export default function Hero() {
                       className="animate-ping"
                       style={{ animationDelay: "0.5s" }}
                     />
-                  </g>
-                  {/* Destination marker - Matching mockup */}
+                  </g>{" "}
+                  {/* Destination marker - Thrissur Temple */}
                   <g transform="translate(90, 25)">
                     <circle cx="0" cy="0" r="15" fill="#10B981" opacity="0.9" />
                     <text
@@ -1034,7 +1021,7 @@ export default function Hero() {
                       className="text-xs font-bold"
                       fill="white"
                     >
-                      🏢
+                      🛕
                     </text>
                     <circle
                       cx="0"
@@ -1046,8 +1033,8 @@ export default function Hero() {
                       opacity="0.3"
                       className="animate-ping"
                     />
-                  </g>
-                  {/* Starting point - Matching mockup */}{" "}
+                  </g>{" "}
+                  {/* Starting point - Kochi Marine Drive */}{" "}
                   <g transform="translate(90, 450)">
                     <circle cx="0" cy="0" r="12" fill="#229799" opacity="0.9" />
                     <text
