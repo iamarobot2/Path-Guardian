@@ -108,24 +108,24 @@ export default function Footer() {
               <li className="text-gray-300">
                 <span className="block">Email:</span>{" "}
                 <a
-                  href="mailto:info@pathguardian.ai"
+                  href="mailto:avinjoshy@gmail.com"
                   className="text-[#229799] hover:text-[#1a7373] transition"
                 >
-                  info@pathguardian.ai
+                  avinjoshy@gmail.com
                 </a>
               </li>
               <li className="text-gray-300">
                 <span className="block">Phone:</span>
                 <a
-                  href="tel:+911234567890"
+                  href="tel:+918137954129"
                   className="text-[#229799] hover:text-[#1a7373] transition"
                 >
-                  +91 12345 67890
+                  +91 81379 54129
                 </a>
               </li>
               <li className="text-gray-300">
                 <span className="block">Address:</span>
-                <span>Bangalore, India</span>
+                <span>Kerala, India</span>
               </li>
             </ul>
           </div>
