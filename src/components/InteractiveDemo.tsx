@@ -36,7 +36,7 @@ interface Route {
 export default function InteractiveDemo() {
   const [selectedRoute, setSelectedRoute] = useState<
     "route1" | "route2" | "route3"
-  >("route2");
+  >("route3");
   const [hazards, setHazards] = useState<RouteHazard[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [selectedHazard, setSelectedHazard] = useState<RouteHazard | null>(
