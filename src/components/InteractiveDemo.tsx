@@ -485,12 +485,11 @@ export default function InteractiveDemo() {
             B by analyzing road quality, hazards, traffic, and distance to
             minimize travel costs and time.
           </p>
-        </div>
-
+        </div>{" "}
         {/* Main Demo Container */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="space-y-8">
           {/* Route Visualization */}
-          <div className="lg:col-span-2">
+          <div className="w-full">
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-2xl font-bold text-white">
@@ -852,85 +851,83 @@ export default function InteractiveDemo() {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Route Selection and Analysis */}
-          <div className="space-y-6">
-            {/* Route Selection */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
-              <h3 className="text-xl font-bold text-white mb-4">
-                Available Routes
-              </h3>
-              <div className="space-y-3">
-                {routes.map((route) => (
-                  <button
-                    key={route.id}
-                    onClick={() => setSelectedRoute(route.id)}
-                    className={`w-full p-4 rounded-xl text-left transition-all border-2 ${
-                      selectedRoute === route.id
-                        ? "bg-white/20 border-white/40"
-                        : "bg-white/5 border-white/20 hover:bg-white/10"
-                    } ${
-                      route.id === getRouteRecommendation()
-                        ? "ring-2 ring-yellow-400"
-                        : ""
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span
-                        className="font-bold text-sm"
-                        style={{ color: route.color }}
-                      >
-                        {route.name}
+          </div>{" "}
+          {/* Available Routes - Full Width */}
+          <div className="w-full bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+            <h3 className="text-xl font-bold text-white mb-4">
+              Available Routes
+            </h3>
+            <div className="space-y-3 md:space-y-0 md:space-x-3 md:flex md:flex-row">
+              {routes.map((route) => (
+                <button
+                  key={route.id}
+                  onClick={() => setSelectedRoute(route.id)}
+                  className={`w-full md:flex-1 p-4 rounded-xl text-left transition-all border-2 ${
+                    selectedRoute === route.id
+                      ? "bg-white/20 border-white/40"
+                      : "bg-white/5 border-white/20 hover:bg-white/10"
+                  } ${
+                    route.id === getRouteRecommendation()
+                      ? "ring-2 ring-yellow-400"
+                      : ""
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span
+                      className="font-bold text-sm"
+                      style={{ color: route.color }}
+                    >
+                      {route.name}
+                    </span>
+                    {route.id === getRouteRecommendation() && (
+                      <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
+                        RECOMMENDED
                       </span>
-                      {route.id === getRouteRecommendation() && (
-                        <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded-full font-bold">
-                          RECOMMENDED
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-white/90 text-xs mb-2">
-                      {route.description}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-white/70">Distance:</span>
-                        <span className="text-white ml-1">
-                          {route.distance} km
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-white/70">Time:</span>
-                        <span className="text-white ml-1">
-                          {route.estimatedTime} min
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-white/70">Hazards:</span>
-                        <span className="text-white ml-1">
-                          {route.hazardCount}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="mt-2 flex items-center gap-2">
-                      <span className="text-white/70 text-xs">Traffic:</span>
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{
-                          backgroundColor: getTrafficColor(route.trafficLevel),
-                        }}
-                      ></div>
-                      <span className="text-white text-xs capitalize">
-                        {route.trafficLevel}
+                    )}
+                  </div>
+                  <div className="text-white/90 text-xs mb-2">
+                    {route.description}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <span className="text-white/70">Distance:</span>
+                      <span className="text-white ml-1">
+                        {route.distance} km
                       </span>
                     </div>
-                  </button>
-                ))}
-              </div>
+                    <div>
+                      <span className="text-white/70">Time:</span>
+                      <span className="text-white ml-1">
+                        {route.estimatedTime} min
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-white/70">Hazards:</span>
+                      <span className="text-white ml-1">
+                        {route.hazardCount}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2">
+                    <span className="text-white/70 text-xs">Traffic:</span>
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{
+                        backgroundColor: getTrafficColor(route.trafficLevel),
+                      }}
+                    ></div>
+                    <span className="text-white text-xs capitalize">
+                      {route.trafficLevel}
+                    </span>
+                  </div>
+                </button>
+              ))}
             </div>
-
+          </div>
+          {/* Benefits and Why PathGuardian - Two Column Row */}
+          <div className="flex flex-col lg:flex-row gap-6">
             {/* PathGuardian Benefits */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+            <div className="flex-1 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-4">
                 PathGuardian Benefits
               </h3>
@@ -969,7 +966,7 @@ export default function InteractiveDemo() {
             </div>
 
             {/* Why Choose PathGuardian */}
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+            <div className="flex-1 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
               <h3 className="text-xl font-bold text-white mb-4">
                 Why Choose PathGuardian?
               </h3>
@@ -1087,7 +1084,6 @@ export default function InteractiveDemo() {
             </div>
           </div>
         </div>
-
         {/* Bottom CTA */}
         <div className="text-center mt-12">
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl inline-block">
